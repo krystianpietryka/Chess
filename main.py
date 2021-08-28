@@ -560,7 +560,7 @@ last_moved_piece = 0
 current_turn = Colour.WHITE
 
 
-# Blit the board and the pieces onto the display surface
+# Blit the board and the pieces onto the Pygame display surface
 def Update_board_state(board):
     display_surface.blit(board_image, (0, 0))
     for row in range(0, 8):
