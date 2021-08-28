@@ -139,30 +139,32 @@ def Coverage(p):
 
 # Checks all opposite pieces on the board, compares their moves to potential king move,
 # if they match, king move gets removed, because he would put himself in check
-def King_Check(moves, king_colour):
+def King_Check(m, king_colour):
+    moves = copy.deepcopy(m)
     for move in moves:
-        for l in board:
-            for p in l:
+        for row in board:
+            for p in row:
                 if p != 0:
                     if p.colour != king_colour:
                         if p.model != WK and p.model != BK:
-                            if p.model == BP or p.model == WP: # Special case for pawns, we only check diagonals
+                            if p.model == BP or p.model == WP:  # Special case for pawns, we only check diagonals
                                 if move == (p.row + 1, p.column - 1):
-                                    while move in moves:
-                                        moves.remove(move)
+                                    while move in m:
+                                        m.remove(move)
                                 if move == (p.row - 1, p.column - 1):
-                                    while move in moves:
-                                        moves.remove(move)
+                                    while move in m:
+                                        m.remove(move)
                                 if move == (p.row - 1, p.column + 1):
-                                    while move in moves:
-                                        moves.remove(move)
+                                    while move in m:
+                                        m.remove(move)
                                 if move == (p.row + 1, p.column + 1):
-                                    while move in moves:
-                                        moves.remove(move)
+                                    while move in m:
+                                        m.remove(move)
                             else:   # Not a king and not a pawn
-                                if move in Possible_moves(p):
-                                    if move in moves:
-                                        moves.remove(move)
+                                enemy_moves = Possible_moves(p)
+                                if move in enemy_moves:
+                                    if move in m:
+                                        m.remove(move)
                         else:   # Case for enemy king
                             r = p.row
                             c = p.column
@@ -170,14 +172,14 @@ def King_Check(moves, king_colour):
                                                          (r-1, c+1), (r-1, c-1), (r-1, c), (r, c-1)]
                             for enemy_move in possible_enemy_king_moves:
                                 if move == enemy_move:
-                                    if move in moves:
-                                        moves.remove(move)
-    #print("Available king moves:" , len(moves))
+                                    if move in m:
+                                        m.remove(move)
+    moves = copy.deepcopy(m)
     for move in moves:
         if board[move[1]][move[0]] != 0:
             if Coverage(board[move[1]][move[0]]) == 1:
-                moves.remove(move)
-    return moves
+                m.remove(move)
+    return m
 
 
 # Checks if a piece move puts enemy king in check
@@ -546,7 +548,6 @@ x = 512
 y = 512
 display_surface = pygame.display.set_mode((x, y))
 pygame.display.set_caption('Szachongi')
-
 
 
 # Game Logic variables
