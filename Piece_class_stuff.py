@@ -2,7 +2,6 @@ from enum import Enum
 import pygame
 
 
-
 class Colour(Enum):
     WHITE = 0
     BLACK = 1

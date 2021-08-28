@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import os
 import copy
-from Piece_move_logic import Enemy_Piece_Check, Friendly_Piece_Check, Possible_moves, board, Castling_and_check_variables
+from Game_move_logic import Enemy_Piece_Check, Friendly_Piece_Check, Possible_moves, board, Castling_and_check_variables, Swap_Turns, Checkmate_Check
 from Piece_class_stuff import *
-from Game_turn_stuff import *
+
 
 # -------------------------------------PYGAME---------------------------------------------------------------------------
 # Pygame Initialization
@@ -161,6 +161,7 @@ while True:
                             if Friendly_Piece_Check(current_object.colour) == 0:
                                 board = previous_board
                                 current_turn = Swap_Turns(current_turn)
+
 
                             # If move succeeded all checks, update the board, zero the variables, swap turns
                             Update_board_state(board)
