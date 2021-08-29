@@ -5,6 +5,7 @@ import copy
 import Game_move_logic
 from Piece_class_stuff import Colour, Piece_Objects, Sprites
 
+letters = ("a", "b", "c", "d", "e", "f", "g", "h")
 # -------------------------------------PYGAME---------------------------------------------------------------------------
 if __name__ == "__main__":
     # Pygame Initialization
@@ -37,7 +38,7 @@ if __name__ == "__main__":
                 if cell != 0:   # If cell contains a piece, blit that piece
                     cell.column = column
                     cell.row = row
-                    display_surface.blit(cell.model, (64 * row, 64 * column))
+                    display_surface.blit(cell.model, (64 * row,  64 * column))
         pygame.display.flip()
 
     # Function highlights possible move locations for a piece (Blits red squares on coordinates)
@@ -154,6 +155,7 @@ if __name__ == "__main__":
                                 last_moved_piece = current_object
                                 Game_move_logic.board[y][x] = current_object  # Copy the piece to move location
                                 Game_move_logic.board[previous_column][previous_row] = 0  # Empty initial piece location
+                                print(letters[x] + str(y))
 
                                 # Checks whether a move exposes allied king, if it does revert board state
                                 if Game_move_logic.Friendly_Piece_Check(current_object.colour) == 0:
@@ -198,13 +200,10 @@ if __name__ == "__main__":
                     else:  # If piece was clicked
                         if Game_move_logic.board[y][x] != 0:
                             if current_turn == Game_move_logic.board[y][x].colour:  # Check turn order
-                                print(x, y)
                                 object_dragging = True
                                 current_object = Game_move_logic.board[y][x]  # store the piece clicked
                                 previous_row = copy.deepcopy(current_object.row)
                                 previous_column = copy.deepcopy(current_object.column)
                             else:
                                 print('Current Turn = ' + str(current_turn))
-                        else:
-                            print(x, y)
 # ----------------------------------------------------------------------------------------------------------------------
