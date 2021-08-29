@@ -16,6 +16,7 @@ class Castling_and_check_variables:
     black_check = 0
     last_moved_piece = 0
 
+
 # Starting board state
 board = [[Piece_Objects.Rook3, Piece_Objects.Knight3, Piece_Objects.Bishop3, Piece_Objects.Queen2, Piece_Objects.King2, Piece_Objects.Bishop4, Piece_Objects.Knight4, Piece_Objects.Rook4],
          [Piece_Objects.Pawn9, Piece_Objects.Pawn10, Piece_Objects.Pawn11, Piece_Objects.Pawn12, Piece_Objects.Pawn13, Piece_Objects.Pawn14, Piece_Objects.Pawn15, Piece_Objects.Pawn16],
@@ -26,18 +27,18 @@ board = [[Piece_Objects.Rook3, Piece_Objects.Knight3, Piece_Objects.Bishop3, Pie
          [Piece_Objects.Pawn1, Piece_Objects.Pawn2, Piece_Objects.Pawn3, Piece_Objects.Pawn4, Piece_Objects.Pawn5, Piece_Objects.Pawn6, Piece_Objects.Pawn7, Piece_Objects.Pawn8],
          [Piece_Objects.Rook1, Piece_Objects.Knight1, Piece_Objects.Bishop1, Piece_Objects.Queen1, Piece_Objects.King1, Piece_Objects.Bishop2, Piece_Objects.Knight2, Piece_Objects.Rook2]]
 
+
 # Checks if a friendly piece covers called piece
 def Coverage(p):
     p.colour = Swap_Colour(p)   # Swap colour and call Possible moves, cheeky
-    for l in board:
-        for ally in l:
+    for line in board:
+        for ally in line:
             if ally != 0 and ally.colour != p.colour:
                 if (p.row, p.column) in Possible_moves(ally):
                     p.colour = Swap_Colour(p)
                     return 1
     p.colour = Swap_Colour(p)
     return 0
-
 
 
 # Checks all opposite pieces on the board, compares their moves to potential king move,
@@ -50,7 +51,7 @@ def King_Check(m, king_colour):
                 if p != 0:
                     if p.colour != king_colour:
                         if p.model != Sprites.WK and p.model != Sprites.BK:
-                            if p.model == Sprites.BP or p.model == Sprites.WP:  # Special case for pawns, we only check diagonals
+                            if p.model == Sprites.BP or p.model == Sprites.WP:  # Special pawn case, check diagonals
                                 if move == (p.row + 1, p.column - 1):
                                     while move in m:
                                         m.remove(move)
@@ -84,6 +85,7 @@ def King_Check(m, king_colour):
                 m.remove(move)
     return m
 
+
 # Checks if a piece move puts enemy king in check
 def Enemy_Piece_Check(p):
     moves = Possible_moves(p)
@@ -100,17 +102,17 @@ def Enemy_Piece_Check(p):
 
 # Checks if a move exposes a king
 def Friendly_Piece_Check(piece_colour):
-        for l in board:
-            for p in l:
-                if p != 0 and p.colour != piece_colour:
-                    moves = Possible_moves(p)
-                    for move in moves:
-                        if board[move[1]][move[0]] != 0:
-                            if (board[move[1]][move[0]].model == Sprites.BK) or (board[move[1]][move[0]].model == Sprites.WK):
-                                print("Move would expose the king")
-                                return 0
+    for line in board:
+        for p in line:
+            if p != 0 and p.colour != piece_colour:
+                moves = Possible_moves(p)
+                for move in moves:
+                    if board[move[1]][move[0]] != 0:
+                        if (board[move[1]][move[0]].model == Sprites.BK) or (board[move[1]][move[0]].model == Sprites.WK):
+                            print("Move would expose the king")
+                            return 0
 
-        return 1
+    return 1
 
 
 # DEBILU TRZEBA BYLO ROBIC TRY EXCEPTY ZAMIAST TYLU WARUNKOW NA GRANICACH PLANSZY
@@ -437,6 +439,7 @@ def Possible_moves(piece):
 
         return moves
 
+
 def Swap_Colour(p):
     if p.colour == Colour.WHITE:
         return Colour.BLACK
@@ -455,18 +458,16 @@ def Swap_Turns(colour):
 def Checkmate_Check(board, colour):
     count = 0
     amount_of_pieces = 0
-    for l in board:
-        for p in l:
+    for line in board:
+        for p in line:
             if p != 0 and p.colour == colour:
                 amount_of_pieces += 1
-                #print("count= ", count)
                 if p.model != Sprites.BK and p.model != Sprites.WK:
                     if Friendly_Piece_Check(p) == 1:
                         count += 1
                 else:
                     if not King_Check(Possible_moves(p), colour):
                         count += 1
-    #print(count, amount_of_pieces)
     if count == amount_of_pieces:
         return 1
     else:

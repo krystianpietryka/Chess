@@ -67,4 +67,3 @@ class Piece_Objects:
     King2 = Piece(0, 4, Sprites.BK, Colour.BLACK)
     Queen1 = Piece(7, 3, Sprites.WQ, Colour.WHITE)
     Queen2 = Piece(0, 3, Sprites.BQ, Colour.BLACK)
-
