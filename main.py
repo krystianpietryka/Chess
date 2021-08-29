@@ -5,7 +5,7 @@ import copy
 import Game_move_logic
 from Piece_class_stuff import Colour, Piece_Objects, Sprites
 
-letters = ("a", "b", "c", "d", "e", "f", "g", "h")
+
 # -------------------------------------PYGAME---------------------------------------------------------------------------
 if __name__ == "__main__":
     # Pygame Initialization
@@ -28,6 +28,7 @@ if __name__ == "__main__":
     previous_row = 0
     previous_column = 0
     current_turn = Colour.WHITE
+    letters = ("a", "b", "c", "d", "e", "f", "g", "h")  # Used in converting move notation
 
     # Blit the board and the pieces onto the Pygame display surface
     def Update_board_state(board):
@@ -91,10 +92,11 @@ if __name__ == "__main__":
                                     # Weird En passant shit
                                     elif (((x, y) == (current_object.row - 1, current_object.column - 1))
                                           or ((x, y) == (current_object.row + 1, current_object.column - 1))):
-                                        if Game_move_logic.Castling_and_check_variables.last_moved_piece.row == x and Game_move_logic.Castling_and_check_variables.last_moved_piece.column == y + 1:
-                                            print('EN PASSANT!')
-                                            Game_move_logic.board[y + 1][x] = 0
-                                            Update_board_state(Game_move_logic.board)
+                                        if Game_move_logic.Castling_and_check_variables.last_moved_piece != 0:
+                                            if Game_move_logic.Castling_and_check_variables.last_moved_piece.row == x and Game_move_logic.Castling_and_check_variables.last_moved_piece.column == y + 1:
+                                                print('EN PASSANT!')
+                                                Game_move_logic.board[y + 1][x] = 0
+                                                Update_board_state(Game_move_logic.board)
 
                                 if current_object.model == Sprites.BP:
                                     if y == 7:
