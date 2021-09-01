@@ -115,7 +115,6 @@ def Friendly_Piece_Check(piece_colour):
     return 1
 
 
-# DEBILU TRZEBA BYLO ROBIC TRY EXCEPTY ZAMIAST TYLU WARUNKOW NA GRANICACH PLANSZY
 # Function returns all possible move locations for a given piece, including castling and en passant
 def Possible_moves(piece):
     row = piece.row
@@ -277,8 +276,8 @@ def Possible_moves(piece):
     elif piece.model == Sprites.BK or piece.model == Sprites.WK:
         # Castling white
         if Castling_and_check_variables.white_king_moved == 0 and piece.model == Sprites.WK and piece.row == 4 and piece.column == 7:
-            if (Piece_Objects.Rook1 not in Castling_and_check_variables.rooks_moved) and board[7][3] == 0 and board[7][2] == 0 and board[7][1] == 0: # LONG
-                castling_tiles = [(3,7), (2, 7), (1, 7)]
+            if (Piece_Objects.Rook1 not in Castling_and_check_variables.rooks_moved) and board[7][3] == 0 and board[7][2] == 0 and board[7][1] == 0:    # LONG
+                castling_tiles = [(3, 7), (2, 7), (1, 7)]
                 castling_tiles = King_Check(castling_tiles, Colour.WHITE)
                 if len(castling_tiles) == 3:
                     moves.append((2, 7))
