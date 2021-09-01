@@ -213,7 +213,7 @@ if __name__ == "__main__":
 # ----------------------------------------------------------------------------------------------------------------------
 # GUI
     sg.theme('LightBrown10')
-
+    
     def intro():
         layout = [[sg.Text('Welcome to my chess simulation!', size=(50, 1))],
                   [sg.Button('Single Player', size=(35, 2))],
