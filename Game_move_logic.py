@@ -8,13 +8,13 @@ import copy
 
 
 # Variables used in castling and checks
-class Castling_and_check_variables:
-    rooks_moved = []
-    black_king_moved = 0
-    white_king_moved = 0
-    white_check = 0
-    black_check = 0
-    last_moved_piece = 0
+
+rooks_moved = []
+black_king_moved = 0
+white_king_moved = 0
+white_check = 0
+black_check = 0
+last_moved_piece = 0
 
 
 # Starting board state
@@ -138,7 +138,7 @@ def Possible_moves(piece):
                     if board[piece.column - 1][piece.row + 1].colour != piece.colour:
                         moves.append((piece.row + 1, piece.column - 1))
                 if board[piece.column - 1][piece.row + 1] == 0 and board[piece.column][
-                    piece.row + 1] == Castling_and_check_variables.last_moved_piece:
+                    piece.row + 1] == last_moved_piece:
                     if piece.column == 3:
                         moves.append((piece.row + 1, piece.column - 1))
 
@@ -148,7 +148,7 @@ def Possible_moves(piece):
                         moves.append((piece.row - 1, piece.column - 1))
                 # En passant
                 if board[piece.column - 1][piece.row - 1] == 0 and board[piece.column][
-                    piece.row - 1] == Castling_and_check_variables.last_moved_piece:
+                    piece.row - 1] == last_moved_piece:
                     if piece.column == 3:
                         moves.append((piece.row - 1, piece.column - 1))
         return moves
@@ -173,7 +173,7 @@ def Possible_moves(piece):
                     if board[piece.column + 1][piece.row + 1].colour != piece.colour:
                         moves.append((piece.row + 1, piece.column + 1))
                 if board[piece.column + 1][piece.row + 1] == 0 and board[piece.column][
-                    piece.row + 1] == Castling_and_check_variables.last_moved_piece:
+                    piece.row + 1] == last_moved_piece:
                     if piece.column == 4:
                         moves.append((piece.row + 1, piece.column + 1))
             if piece.row != 0:  # Diagonal left
@@ -182,7 +182,7 @@ def Possible_moves(piece):
                         moves.append((piece.row - 1, piece.column + 1))
                 # En passant
                 if board[piece.column + 1][piece.row - 1] == 0 and board[piece.column][
-                    piece.row - 1] == Castling_and_check_variables.last_moved_piece:
+                    piece.row - 1] == last_moved_piece:
                     if piece.column == 4:
                         moves.append((piece.row - 1, piece.column + 1))
         return moves
@@ -275,25 +275,25 @@ def Possible_moves(piece):
     # Kings
     elif piece.model == Sprites.BK or piece.model == Sprites.WK:
         # Castling white
-        if Castling_and_check_variables.white_king_moved == 0 and piece.model == Sprites.WK and piece.row == 4 and piece.column == 7:
-            if (Piece_Objects.Rook1 not in Castling_and_check_variables.rooks_moved) and board[7][3] == 0 and board[7][2] == 0 and board[7][1] == 0:    # LONG
+        if white_king_moved == 0 and piece.model == Sprites.WK and piece.row == 4 and piece.column == 7:
+            if (Piece_Objects.Rook1 not in rooks_moved) and board[7][3] == 0 and board[7][2] == 0 and board[7][1] == 0:    # LONG
                 castling_tiles = [(3, 7), (2, 7), (1, 7)]
                 castling_tiles = King_Check(castling_tiles, Colour.WHITE)
                 if len(castling_tiles) == 3:
                     moves.append((2, 7))
-            if (Piece_Objects.Rook2 not in Castling_and_check_variables.rooks_moved) and board[7][5] == 0 and board[7][6] == 0:  # SHORT
+            if (Piece_Objects.Rook2 not in rooks_moved) and board[7][5] == 0 and board[7][6] == 0:  # SHORT
                 castling_tiles = [(5, 7), (6, 7)]
                 castling_tiles = King_Check(castling_tiles, Colour.WHITE)
                 if len(castling_tiles) == 2:
                     moves.append((6, 7))
         # Castling black
-        if Castling_and_check_variables.black_king_moved == 0 and piece.model == Sprites.BK and piece.row == 4 and piece.column == 0:
-            if (Piece_Objects.Rook3 not in Castling_and_check_variables.rooks_moved) and board[0][3] == 0 and board[0][2] == 0 and board[0][1] == 0:  # LONG
+        if black_king_moved == 0 and piece.model == Sprites.BK and piece.row == 4 and piece.column == 0:
+            if (Piece_Objects.Rook3 not in rooks_moved) and board[0][3] == 0 and board[0][2] == 0 and board[0][1] == 0:  # LONG
                 castling_tiles = [(3, 0), (2, 0), (1, 1)]
                 castling_tiles = King_Check(castling_tiles, Colour.BLACK)
                 if len(castling_tiles) == 3:
                     moves.append((2, 0))
-            if (Piece_Objects.Rook4 not in Castling_and_check_variables.rooks_moved) and board[0][5] == 0 and board[0][6] == 0:  # SHORT
+            if (Piece_Objects.Rook4 not in rooks_moved) and board[0][5] == 0 and board[0][6] == 0:  # SHORT
                 castling_tiles = [(5, 0), (6, 0)]
                 castling_tiles = King_Check(castling_tiles, Colour.BLACK)
                 if len(castling_tiles) == 2:

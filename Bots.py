@@ -1,5 +1,6 @@
-from Game_move_logic import Possible_moves
 import random
+
+from Game_move_logic import Possible_moves
 from Game_move_logic import board
 
 
