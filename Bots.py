@@ -1,14 +1,12 @@
 import random
 
 from Game_move_logic import Possible_moves
-from Game_move_logic import board
 
-
-def Random_Bot(b):
+def Random_Bot(b, colour):
     available_moves = {}
     for line in b:
         for p in line:
-            if p != 0:
+            if p != 0 and p.colour == colour:
                 moves = Possible_moves(p)
                 if not not moves:   # Dumbest boolean evaluation ever
                     available_moves[p] = moves[random.randint(0, len(moves)-1)]
@@ -17,4 +15,4 @@ def Random_Bot(b):
     return move
 
 
-print(Random_Bot(board))
+
