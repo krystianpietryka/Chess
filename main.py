@@ -66,9 +66,10 @@ def Chess(game_type, player_colour):
 
     # Main game loop
     while True:
+
         # Bot Move
         if game_type != 0 and current_turn != player_colour:
-            bot_move = Bots.Random_Bot(Game_move_logic.board, bot_colour)
+            bot_move = Bots.Bot_Choice(game_type, Game_move_logic.board, bot_colour)
             Game_move_logic.last_moved_piece = bot_move[0]
             Game_move_logic.board[bot_move[0].column][bot_move[0].row] = 0  # Copy the piece to move location
             Game_move_logic.board[bot_move[1][1]][bot_move[1][0]] = bot_move[0]  # Empty initial piece location

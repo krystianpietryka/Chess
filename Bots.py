@@ -1,6 +1,12 @@
 import random
-
 from Game_move_logic import Possible_moves
+
+
+def Bot_Choice(number, b, colour):
+    if number == 1:
+        move = Random_Bot(b, colour)
+        return move
+
 
 def Random_Bot(b, colour):
     available_moves = {}
@@ -12,7 +18,6 @@ def Random_Bot(b, colour):
                     available_moves[p] = moves[random.randint(0, len(moves)-1)]
     piece, coords = random.choice(list(available_moves.items()))
     move = (piece, coords)
-    print(move)
     return move
 
 
