@@ -12,6 +12,7 @@ def Random_Bot(b, colour):
                     available_moves[p] = moves[random.randint(0, len(moves)-1)]
     piece, coords = random.choice(list(available_moves.items()))
     move = (piece, coords)
+    print(move)
     return move
 
 
