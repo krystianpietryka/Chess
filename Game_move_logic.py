@@ -132,16 +132,15 @@ def King_Check(m, king_colour):
 
 
 # Checks if a piece move puts enemy king in check
-def Enemy_Piece_Check(p):
+def Enemy_Piece_Check(p, b):
     moves = Possible_moves(p)
     colour = p.colour
     for move in moves:
-        if board[move[1]][move[0]] != 0:
-            if (board[move[1]][move[0]].model == Piece_class_stuff.Sprites.BK and colour == colour.WHITE) or (board[move[1]][move[0]].model == Piece_class_stuff.Sprites.WK and colour == colour.BLACK):
-                if colour == colour.WHITE:
-                    return 1
-                else:
-                    return 1
+        print("possible move:", move[0], move[1])
+        if b[move[1]][move[0]] != 0:
+            if (b[move[1]][move[0]].model == Piece_class_stuff.Sprites.BK and colour == colour.WHITE) or (b[move[1]][move[0]].model == Piece_class_stuff.Sprites.WK and colour == colour.BLACK):
+                print("zwracam 1")
+                return 1
     return 0
 
 
@@ -156,7 +155,6 @@ def Friendly_Piece_Check(piece_colour):
                         if (board[move[1]][move[0]].model == Piece_class_stuff.Sprites.BK) or (board[move[1]][move[0]].model == Piece_class_stuff.Sprites.WK):
                             print("Move would expose the king")
                             return 0
-
     return 1
 
 
@@ -491,9 +489,6 @@ def Swap_Colour(p):
         return Piece_class_stuff.Colour.WHITE
 
 
-
-
-
 def Swap_Turns(colour):
     if colour == Piece_class_stuff.Colour.WHITE:
         colour = Piece_class_stuff.Colour.BLACK
@@ -525,7 +520,6 @@ def Checkmate_Check(current_board, colour):
 def Move(current_board, current_object, x, y, previous_row, previous_column):
     letters = ("a", "b", "c", "d", "e", "f", "g", "h")  # Used in move notation
     move_success = 1
-    print("Check state: White:", Move_allowance.white_check, "Black: ", Move_allowance.black_check )
     # Pawn Promotions - swaps promoted pawns model to queen
     if current_object.model == Piece_class_stuff.Sprites.WP:
         if y == 0:
@@ -584,10 +578,10 @@ def Move(current_board, current_object, x, y, previous_row, previous_column):
             Move_allowance.rooks_moved.append(current_object)
 
     # Check if king was checked
-    if Enemy_Piece_Check(current_object) == 1 and current_object.colour == Piece_class_stuff.Colour.BLACK:
+    if Enemy_Piece_Check(current_board[y][x], board) == 1 and current_board[y][x].colour == Piece_class_stuff.Colour.BLACK:
         Move_allowance.white_check = 1
         print("White Check")
-    if Enemy_Piece_Check(current_object) == 1 and current_object.colour == Piece_class_stuff.Colour.WHITE:
+    if Enemy_Piece_Check(current_board[y][x], board) == 1 and current_board[y][x].colour == Piece_class_stuff.Colour.WHITE:
         Move_allowance.black_check = 1
         print("Black Check")
 
