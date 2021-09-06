@@ -10,6 +10,7 @@ import Bots
 
 # -------------------------------------PYGAME---------------------------------------------------------------------------
 
+
 def Chess(game_type, player_colour):
     # Pygame Initialization
     pygame.init()
@@ -71,20 +72,18 @@ def Chess(game_type, player_colour):
         if game_type != 0 and current_turn != player_colour:
             bot_move = Bots.Bot_Choice(game_type, Game_move_logic.board, bot_colour)
             Game_move_logic.last_moved_piece = bot_move[0]
+            current_object = bot_move[0]
             Game_move_logic.board[bot_move[0].column][bot_move[0].row] = 0  # Copy the piece to move location
             Game_move_logic.board[bot_move[1][1]][bot_move[1][0]] = bot_move[0]  # Empty initial piece location
             Update_board_state(Game_move_logic.board)
             current_turn = player_colour
             print(letters[x] + str(y))
 
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-
-            # Bot Game
-
-
 
             # Get piece at click coordinates
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -93,6 +92,7 @@ def Chess(game_type, player_colour):
                     x = int(x / 64)
                     y = int(y / 64)
                     piece = Game_move_logic.board[y][x]
+
                     # If piece exists and the turn colour matches, Highlights possible moves
                     if piece != 0:
                         if piece.colour == current_turn:
