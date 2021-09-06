@@ -6,15 +6,12 @@ import copy
 # Board[column][row] (because Board is a 2d table)
 
 
-# Variables used in allowing or dissalowing moves
-class Move_allowance:
-    rooks_moved = []
-    black_king_moved = 0
-    white_king_moved = 0
-    white_check = 0
-    black_check = 0
-    last_moved_piece = 0
-    checkmate = 0
+def Copy_board(board_to_copy):
+    copied_board = [[0 for row in range(8)] for column in range(8)]
+    for line in range(8):
+        for p in range(8):
+            copied_board[line][p] = board_to_copy[line][p]
+    return copied_board
 
 
 # Starting board state
@@ -27,6 +24,18 @@ board = [[Piece_class_stuff.Piece_Objects.Rook3, Piece_class_stuff.Piece_Objects
          [Piece_class_stuff.Piece_Objects.Pawn1, Piece_class_stuff.Piece_Objects.Pawn2, Piece_class_stuff.Piece_Objects.Pawn3, Piece_class_stuff.Piece_Objects.Pawn4, Piece_class_stuff.Piece_Objects.Pawn5, Piece_class_stuff.Piece_Objects.Pawn6, Piece_class_stuff.Piece_Objects.Pawn7, Piece_class_stuff.Piece_Objects.Pawn8],
          [Piece_class_stuff.Piece_Objects.Rook1, Piece_class_stuff.Piece_Objects.Knight1, Piece_class_stuff.Piece_Objects.Bishop1, Piece_class_stuff.Piece_Objects.Queen1, Piece_class_stuff.Piece_Objects.King1, Piece_class_stuff.Piece_Objects.Bishop2, Piece_class_stuff.Piece_Objects.Knight2, Piece_class_stuff.Piece_Objects.Rook2]]
 
+
+# Variables used in allowing or dissalowing moves
+class Move_allowance:
+    rooks_moved = []
+    black_king_moved = 0
+    white_king_moved = 0
+    white_check = 0
+    black_check = 0
+    last_moved_piece = 0
+    checkmate = 0
+    current_turn = Piece_class_stuff.Colour.WHITE
+    previous_board = Copy_board(board)
 
 def White_Castle_Long(current_board, rooks):
     current_board[7][2] = Piece_class_stuff.Piece_Objects.King1
@@ -482,12 +491,8 @@ def Swap_Colour(p):
         return Piece_class_stuff.Colour.WHITE
 
 
-def Copy_board(board_to_copy):
-    copied_board = [[0 for i in range(8)] for j in range(8)]
-    for line in range(8):
-        for p in range(8):
-            copied_board[line][p] = board_to_copy[line][p]
-    return copied_board
+
+
 
 def Swap_Turns(colour):
     if colour == Piece_class_stuff.Colour.WHITE:
@@ -516,10 +521,11 @@ def Checkmate_Check(current_board, colour):
         return 0
 
 
-# Handles the logic of moving pieces on the board
-def Move(last_moved_piece, current_board, current_object, x, y, previous_row, previous_column, current_turn):
+# Handles the logic of moving pieces on the board, returns the new boards state if move successful
+def Move(current_board, current_object, x, y, previous_row, previous_column):
     letters = ("a", "b", "c", "d", "e", "f", "g", "h")  # Used in move notation
-
+    move_success = 1
+    print("Check state: White:", Move_allowance.white_check, "Black: ", Move_allowance.black_check )
     # Pawn Promotions - swaps promoted pawns model to queen
     if current_object.model == Piece_class_stuff.Sprites.WP:
         if y == 0:
@@ -534,8 +540,8 @@ def Move(last_moved_piece, current_board, current_object, x, y, previous_row, pr
     if current_object.model == Piece_class_stuff.Sprites.BP or current_object.model == Piece_class_stuff.Sprites.WP:
         if (((x, y) == (current_object.row - 1, current_object.column - 1))
               or ((x, y) == (current_object.row + 1, current_object.column - 1))):
-            if last_moved_piece != 0:
-                if last_moved_piece.row == x and last_moved_piece.column == y + 1:
+            if Move_allowance.last_moved_piece != 0:
+                if Move_allowance.last_moved_piece.row == x and Move_allowance.last_moved_piece.column == y + 1:
                     print('EN PASSANT!')
                     current_board[y + 1][x] = 0
 
@@ -554,20 +560,19 @@ def Move(last_moved_piece, current_board, current_object, x, y, previous_row, pr
         elif (x, y) == (6, 0) and Move_allowance.black_king_moved == 0 and Piece_class_stuff.Piece_Objects.Rook4 not in Move_allowance.rooks_moved:  # SHORT
             current_board, rooks_moved, Move_allowance.black_king_moved = Black_Castle_Short(current_board, Move_allowance.rooks_moved)
 
+    # Remember 1 move back
+    Move_allowance.previous_board = Copy_board(current_board)
 
     # Changing piece placement
-    last_moved_piece = current_object
+    Move_allowance.last_moved_piece = current_object
     current_board[y][x] = current_object  # Copy the piece to move location
     current_board[previous_column][previous_row] = 0  # Empty initial piece location
     print(letters[x] + str(y))
 
-    # Remember 1 move back
-    previous_board = Copy_board(current_board)
-
     # Checks whether a move exposes allied king, if it does revert board state
     if Friendly_Piece_Check(current_object.colour) == 0:
-        current_board = previous_board
-        current_turn = Swap_Turns(current_turn)
+        move_success = 0
+        return Move_allowance.previous_board, move_success
 
     # Check if piece moved was a king or a rook, prevents castling with those pieces
     if current_object.model == Piece_class_stuff.Sprites.WK and Move_allowance.white_king_moved == 0:
@@ -582,10 +587,9 @@ def Move(last_moved_piece, current_board, current_object, x, y, previous_row, pr
     if Enemy_Piece_Check(current_object) == 1 and current_object.colour == Piece_class_stuff.Colour.BLACK:
         Move_allowance.white_check = 1
         print("White Check")
-    elif Enemy_Piece_Check(current_object) == 1 and current_object.colour == Piece_class_stuff.Colour.WHITE:
+    if Enemy_Piece_Check(current_object) == 1 and current_object.colour == Piece_class_stuff.Colour.WHITE:
         Move_allowance.black_check = 1
         print("Black Check")
-
 
     # Checkmate Check
     if Move_allowance.white_check == 1:
@@ -594,11 +598,15 @@ def Move(last_moved_piece, current_board, current_object, x, y, previous_row, pr
             Move_allowance.checkmate = 1
         else:
             print("No checkmate")
-            Move_allowance.white_check = 0
+            #Move_allowance.white_check = 0
     elif Move_allowance.black_check == 1:
         if Checkmate_Check(board, Piece_class_stuff.Colour.BLACK) == 1:
             print("Black Checkmate!")
             Move_allowance.checkmate = 1
         else:
             print("No checkmate")
-            Move_allowance.black_check = 0
+            #Move_allowance.black_check = 0
+
+    # Continue turn order, return board state and that move was successful
+    Move_allowance.current_turn = Swap_Turns(Move_allowance.current_turn)
+    return current_board, move_success

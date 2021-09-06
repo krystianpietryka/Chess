@@ -4,10 +4,8 @@ import pygame
 import PySimpleGUI as sg
 import copy
 import Game_move_logic
-import Piece_class_stuff
-from Piece_class_stuff import Colour, Piece_Objects, Sprites
+from Piece_class_stuff import Colour,  Sprites
 import Bots
-
 # -------------------------------------PYGAME---------------------------------------------------------------------------
 
 
@@ -29,7 +27,7 @@ def Chess(game_type, player_colour):
     current_object = 0
     previous_row = 0
     previous_column = 0
-    current_turn = Colour.WHITE
+    Game_move_logic.Move_allowance.current_turn = Colour.WHITE
     letters = ("a", "b", "c", "d", "e", "f", "g", "h")  # Used in converting move notation
     if player_colour == Colour.WHITE:
         bot_colour = Colour.BLACK
@@ -69,16 +67,15 @@ def Chess(game_type, player_colour):
     while True:
 
         # Bot Move
-        if game_type != 0 and current_turn != player_colour:
+        if game_type != 0 and Game_move_logic.Move_allowance.current_turn != player_colour:
             bot_move = Bots.Bot_Choice(game_type, Game_move_logic.board, bot_colour)
             Game_move_logic.last_moved_piece = bot_move[0]
             current_object = bot_move[0]
             Game_move_logic.board[bot_move[0].column][bot_move[0].row] = 0  # Copy the piece to move location
             Game_move_logic.board[bot_move[1][1]][bot_move[1][0]] = bot_move[0]  # Empty initial piece location
             Update_board_state(Game_move_logic.board)
-            current_turn = player_colour
+            Game_move_logic.Move_allowance.current_turn = player_colour
             print(letters[x] + str(y))
-
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -95,8 +92,8 @@ def Chess(game_type, player_colour):
 
                     # If piece exists and the turn colour matches, Highlights possible moves
                     if piece != 0:
-                        if piece.colour == current_turn:
-                            if (game_type != 0 and current_turn == player_colour) or game_type == 0:
+                        if piece.colour == Game_move_logic.Move_allowance.current_turn:
+                            if (game_type != 0 and Game_move_logic.Move_allowance.current_turn == player_colour) or game_type == 0:
                                 Highlight_cells(Game_move_logic.Possible_moves(piece))
 
                     # If an object was clicked previously, move it and empty its previous position
@@ -105,16 +102,19 @@ def Chess(game_type, player_colour):
                             object_dragging = False
                             if (x, y) in Game_move_logic.Possible_moves(current_object):
                                 if Game_move_logic.Move_allowance.checkmate == 0:
-
-                                    # If move succeeded all checks, update the board, zero the variables, swap turns
-                                    pygame.mixer.Sound.play(move_sound)
-                                    Update_board_state(Game_move_logic.board)
-                                    current_object = 0
-                                    previous_row = 0
-                                    previous_column = 0
-                                    current_turn = Game_move_logic.Swap_Turns(current_turn)
-
-                                
+                                    move = Game_move_logic.Move(Game_move_logic.board, current_object, x, y, previous_row, previous_column)
+                                    Game_move_logic.board = move[0]
+                                    # If move succeeded all checks, update the board, zero the variables
+                                    if move[1] == 1:
+                                        pygame.mixer.Sound.play(move_sound)
+                                        Update_board_state(Game_move_logic.board)
+                                        current_object = 0
+                                        previous_row = 0
+                                        previous_column = 0
+                                        Game_move_logic.current_turn = Game_move_logic.Swap_Turns(Game_move_logic.Move_allowance.current_turn)
+                                    else:
+                                        Game_move_logic.board = Game_move_logic.Move_allowance.previous_board
+                                        Update_board_state(Game_move_logic.board)
 
                             # Case if clicked cell is not possible for the piece to move to
                             else:
@@ -124,23 +124,28 @@ def Chess(game_type, player_colour):
 
                     else:  # If piece was clicked
                         if Game_move_logic.board[y][x] != 0:
-                            if current_turn == Game_move_logic.board[y][x].colour:  # Check turn order
+                            if Game_move_logic.Move_allowance.current_turn == Game_move_logic.board[y][x].colour:  # Check turn order
                                 object_dragging = True
                                 current_object = Game_move_logic.board[y][x]  # store the piece clicked
                                 previous_row = copy.deepcopy(current_object.row)
                                 previous_column = copy.deepcopy(current_object.column)
                             else:
-                                print('Current Turn = ' + str(current_turn))
+                                print('Current Turn = ' + str(Game_move_logic.Move_allowance.current_turn))
 # ----------------------------------------------------------------------------------------------------------------------
 # GUI
+
+
 sg.theme('LightBrown10')
 free_play = 0
+
+
 def intro():
     layout = [[sg.Text('Welcome to my chess simulation!', size=(50, 1))],
               [sg.Button('Single Player', size=(35, 2))],
               [sg.Button('Multi Player', size=(35, 2))],
               [sg.Button('Exit', size=(35, 2))]]
     return sg.Window('intro', layout, finalize=True)
+
 
 def Single_Player():
     layout = [[sg.Text('Single Player', size=(50, 1))],
@@ -149,12 +154,14 @@ def Single_Player():
               [sg.Button('Exit', size=(35, 2))]]
     return sg.Window('Single Player', layout, finalize=True)
 
+
 def Choose_Player_Colour():
     layout = [[sg.Text('Choose the colour of your pieces:', size=(50, 1))],
               [sg.Button('White', size=(35, 2))],
               [sg.Button('Black', size=(35, 2))],
               [sg.Button('Exit', size=(35, 2))]]
     return sg.Window('Choose Player Colour', layout, finalize=True)
+
 
 def Main():
     window1, window2 = intro(), None
