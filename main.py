@@ -104,127 +104,17 @@ def Chess(game_type, player_colour):
                         if current_object != 0:
                             object_dragging = False
                             if (x, y) in Game_move_logic.Possible_moves(current_object):
-                                # Pawn Promotions - swaps promoted pawns model to queen
-                                if current_object.model == Sprites.WP:
-                                    if y == 0:
-                                        print('White Promotion!')
-                                        current_object.model = Sprites.WQ
+                                if Game_move_logic.Move_allowance.checkmate == 0:
 
-                                    # Weird En passant shit
-                                    elif (((x, y) == (current_object.row - 1, current_object.column - 1))
-                                          or ((x, y) == (current_object.row + 1, current_object.column - 1))):
-                                        if Game_move_logic.last_moved_piece != 0:
-                                            if Game_move_logic.last_moved_piece.row == x and Game_move_logic.last_moved_piece.column == y + 1:
-                                                print('EN PASSANT!')
-                                                Game_move_logic.board[y + 1][x] = 0
-                                                Update_board_state(Game_move_logic.board)
-
-                                if current_object.model == Sprites.BP:
-                                    if y == 7:
-                                        print('Black Promotion!')
-                                        current_object.model = Sprites.BQ
-
-                                    # Weird En passant shit
-                                    elif (((x, y) == (current_object.row - 1, current_object.column + 1))
-                                          or ((x, y) == (current_object.row + 1, current_object.column + 1))):
-                                        if Game_move_logic.last_moved_piece != 0:
-                                            if Game_move_logic.last_moved_piece.row == x and Game_move_logic.last_moved_piece.column == y - 1:
-                                                print('EN PASSANT!')
-                                                Game_move_logic.board[y - 1][x] = 0
-                                                Update_board_state(Game_move_logic.board)
-
-                                # Castling White
-                                if current_object.model == Sprites.WK:
-                                    if (x, y) == (2, 7) and Game_move_logic.white_king_moved == 0 and Piece_Objects.Rook1 not in Game_move_logic.rooks_moved:  # LONG
-                                        Game_move_logic.board[7][2] = Piece_Objects.King1
-                                        Game_move_logic.board[7][3] = Piece_Objects.Rook1
-                                        Game_move_logic.board[7][4] = 0
-                                        Game_move_logic.board[7][0] = 0
-                                        Game_move_logic.rooks_moved.append(Piece_Objects.Rook1)
-                                        Game_move_logic.white_king_moved = 1
-
-                                    elif (x, y) == (6, 7) and Game_move_logic.white_king_moved == 0 and Piece_Objects.Rook2 not in Game_move_logic.rooks_moved:  # SHORT
-                                        Game_move_logic.board[7][6] = Piece_Objects.King1
-                                        Game_move_logic.board[7][5] = Piece_Objects.Rook2
-                                        Game_move_logic.board[7][4] = 0
-                                        Game_move_logic.board[7][7] = 0
-                                        Game_move_logic.rooks_moved.append(Piece_Objects.Rook2)
-                                        Game_move_logic.white_king_moved = 1
-
-                                # Castling Black
-                                if current_object.model == Sprites.BK:
-                                    if (x, y) == (2, 0) and Game_move_logic.black_king_moved == 0 and Piece_Objects.Rook3 not in Game_move_logic.rooks_moved:  # LONG
-                                        Game_move_logic.board[0][2] = Piece_Objects.King1
-                                        Game_move_logic.board[0][3] = Piece_Objects.Rook3
-                                        Game_move_logic.board[0][4] = 0
-                                        Game_move_logic.board[0][0] = 0
-                                        Game_move_logic.rooks_moved.append(Piece_Objects.Rook3)
-                                        Game_move_logic.black_king_moved = 1
-
-                                    elif (x, y) == (6, 0) and Game_move_logic.black_king_moved == 0 and Piece_Objects.Rook4 not in Game_move_logic.rooks_moved:  # SHORT
-                                        Game_move_logic.board[0][6] = Piece_Objects.King1
-                                        Game_move_logic.board[0][5] = Piece_Objects.Rook4
-                                        Game_move_logic.board[0][4] = 0
-                                        Game_move_logic.board[0][7] = 0
-                                        Game_move_logic.rooks_moved.append(Piece_Objects.Rook4)
-                                        Game_move_logic.black_king_moved = 1
-
-                                # Remembers 1 turn back
-                                previous_board = [[0 for i in range(8)]for j in range(8)]
-                                for line in range(8):
-                                    for p in range(8):
-                                        previous_board[line][p] = Game_move_logic.board[line][p]
-
-                                Game_move_logic.last_moved_piece = current_object
-                                Game_move_logic.board[y][x] = current_object  # Copy the piece to move location
-                                Game_move_logic.board[previous_column][previous_row] = 0  # Empty initial piece location
-                                print(letters[x] + str(y))
-
-                                # Checks whether a move exposes allied king, if it does revert board state
-                                if Game_move_logic.Friendly_Piece_Check(current_object.colour) == 0:
-                                    Game_move_logic.board = previous_board
+                                    # If move succeeded all checks, update the board, zero the variables, swap turns
+                                    pygame.mixer.Sound.play(move_sound)
+                                    Update_board_state(Game_move_logic.board)
+                                    current_object = 0
+                                    previous_row = 0
+                                    previous_column = 0
                                     current_turn = Game_move_logic.Swap_Turns(current_turn)
 
-
-                                # Check if piece moved was a king or a rook, prevents castling with those pieces
-                                if current_object.model == Piece_class_stuff.Sprites.WK:
-                                    Game_move_logic.white_king_moved = 1
-                                elif current_object.model == Piece_class_stuff.Sprites.BK:
-                                    Game_move_logic.black_king_moved = 1
-                                elif current_object.model == Piece_class_stuff.Sprites.WR or current_object.model == Piece_class_stuff.Sprites.BR:
-                                    Game_move_logic.rooks_moved.append(current_object)
-
-                                # Check if king was checked
-                                if Game_move_logic.Enemy_Piece_Check(current_object) == 1 and current_object.colour == Colour.BLACK:
-                                    Game_move_logic.white_check = 1
-                                    print("White Check")
-                                elif Game_move_logic.Enemy_Piece_Check(current_object) == 1 and current_object.colour == Colour.WHITE:
-                                    Game_move_logic.black_check = 1
-                                    print("Black Check")
-
-                                # If move succeeded all checks, update the board, zero the variables, swap turns
-                                pygame.mixer.Sound.play(move_sound)
-                                Update_board_state(Game_move_logic.board)
-                                current_object = 0
-                                previous_row = 0
-                                previous_column = 0
-                                current_turn = Game_move_logic.Swap_Turns(current_turn)
-
-                                # Checkmate Check
-                                if Game_move_logic.white_check == 1:
-                                    if Game_move_logic.Checkmate_Check(Game_move_logic.board, Colour.WHITE) == 1:
-                                        print("White Checkmate!")
-                                        break
-                                    else:
-                                        print("No checkmate")
-                                        Game_move_logic.white_check = 0
-                                elif Game_move_logic.black_check == 1:
-                                    if Game_move_logic.Checkmate_Check(Game_move_logic.board, Colour.BLACK) == 1:
-                                        print("Black Checkmate!")
-                                        break
-                                    else:
-                                        print("No checkmate")
-                                        Game_move_logic.black_check = 0
+                                
 
                             # Case if clicked cell is not possible for the piece to move to
                             else:

@@ -6,14 +6,15 @@ import copy
 # Board[column][row] (because Board is a 2d table)
 
 
-# Variables used in castling and checks
-class CastlingCheck_Variables:
+# Variables used in allowing or dissalowing moves
+class Move_allowance:
     rooks_moved = []
     black_king_moved = 0
     white_king_moved = 0
     white_check = 0
     black_check = 0
     last_moved_piece = 0
+    checkmate = 0
 
 
 # Starting board state
@@ -173,7 +174,7 @@ def Possible_moves(piece):
                     if board[piece.column - 1][piece.row + 1].colour != piece.colour:
                         moves.append((piece.row + 1, piece.column - 1))
                 if board[piece.column - 1][piece.row + 1] == 0 and board[piece.column][
-                    piece.row + 1] == CastlingCheck_Variables.last_moved_piece:
+                    piece.row + 1] == Move_allowance.last_moved_piece:
                     if piece.column == 3:
                         moves.append((piece.row + 1, piece.column - 1))
 
@@ -183,7 +184,7 @@ def Possible_moves(piece):
                         moves.append((piece.row - 1, piece.column - 1))
                 # En passant
                 if board[piece.column - 1][piece.row - 1] == 0 and board[piece.column][
-                    piece.row - 1] == CastlingCheck_Variables.last_moved_piece:
+                    piece.row - 1] == Move_allowance.last_moved_piece:
                     if piece.column == 3:
                         moves.append((piece.row - 1, piece.column - 1))
         return moves
@@ -208,7 +209,7 @@ def Possible_moves(piece):
                     if board[piece.column + 1][piece.row + 1].colour != piece.colour:
                         moves.append((piece.row + 1, piece.column + 1))
                 if board[piece.column + 1][piece.row + 1] == 0 and board[piece.column][
-                    piece.row + 1] == CastlingCheck_Variables.last_moved_piece:
+                    piece.row + 1] == Move_allowance.last_moved_piece:
                     if piece.column == 4:
                         moves.append((piece.row + 1, piece.column + 1))
             if piece.row != 0:  # Diagonal left
@@ -217,7 +218,7 @@ def Possible_moves(piece):
                         moves.append((piece.row - 1, piece.column + 1))
                 # En passant
                 if board[piece.column + 1][piece.row - 1] == 0 and board[piece.column][
-                    piece.row - 1] == CastlingCheck_Variables.last_moved_piece:
+                    piece.row - 1] == Move_allowance.last_moved_piece:
                     if piece.column == 4:
                         moves.append((piece.row - 1, piece.column + 1))
         return moves
@@ -310,25 +311,25 @@ def Possible_moves(piece):
     # Kings
     elif piece.model == Piece_class_stuff.Sprites.BK or piece.model == Piece_class_stuff.Sprites.WK:
         # Castling white
-        if CastlingCheck_Variables.white_king_moved == 0 and piece.model == Piece_class_stuff.Sprites.WK and piece.row == 4 and piece.column == 7:
-            if (Piece_class_stuff.Piece_Objects.Rook1 not in CastlingCheck_Variables.rooks_moved) and board[7][3] == 0 and board[7][2] == 0 and board[7][1] == 0:    # LONG
+        if Move_allowance.white_king_moved == 0 and piece.model == Piece_class_stuff.Sprites.WK and piece.row == 4 and piece.column == 7:
+            if (Piece_class_stuff.Piece_Objects.Rook1 not in Move_allowance.rooks_moved) and board[7][3] == 0 and board[7][2] == 0 and board[7][1] == 0:    # LONG
                 castling_tiles = [(3, 7), (2, 7), (1, 7)]
                 castling_tiles = King_Check(castling_tiles, Piece_class_stuff.Colour.WHITE)
                 if len(castling_tiles) == 3:
                     moves.append((2, 7))
-            if (Piece_class_stuff.Piece_Objects.Rook2 not in CastlingCheck_Variables.rooks_moved) and board[7][5] == 0 and board[7][6] == 0:  # SHORT
+            if (Piece_class_stuff.Piece_Objects.Rook2 not in Move_allowance.rooks_moved) and board[7][5] == 0 and board[7][6] == 0:  # SHORT
                 castling_tiles = [(5, 7), (6, 7)]
                 castling_tiles = King_Check(castling_tiles, Piece_class_stuff.Colour.WHITE)
                 if len(castling_tiles) == 2:
                     moves.append((6, 7))
         # Castling black
-        if CastlingCheck_Variables.black_king_moved == 0 and piece.model == Piece_class_stuff.Sprites.BK and piece.row == 4 and piece.column == 0:
-            if (Piece_class_stuff.Piece_Objects.Rook3 not in CastlingCheck_Variables.rooks_moved) and board[0][3] == 0 and board[0][2] == 0 and board[0][1] == 0:  # LONG
+        if Move_allowance.black_king_moved == 0 and piece.model == Piece_class_stuff.Sprites.BK and piece.row == 4 and piece.column == 0:
+            if (Piece_class_stuff.Piece_Objects.Rook3 not in Move_allowance.rooks_moved) and board[0][3] == 0 and board[0][2] == 0 and board[0][1] == 0:  # LONG
                 castling_tiles = [(3, 0), (2, 0), (1, 1)]
                 castling_tiles = King_Check(castling_tiles, Piece_class_stuff.Colour.BLACK)
                 if len(castling_tiles) == 3:
                     moves.append((2, 0))
-            if (Piece_class_stuff.Piece_Objects.Rook4 not in CastlingCheck_Variables.rooks_moved) and board[0][5] == 0 and board[0][6] == 0:  # SHORT
+            if (Piece_class_stuff.Piece_Objects.Rook4 not in Move_allowance.rooks_moved) and board[0][5] == 0 and board[0][6] == 0:  # SHORT
                 castling_tiles = [(5, 0), (6, 0)]
                 castling_tiles = King_Check(castling_tiles, Piece_class_stuff.Colour.BLACK)
                 if len(castling_tiles) == 2:
@@ -538,21 +539,20 @@ def Move(last_moved_piece, current_board, current_object, x, y, previous_row, pr
                     print('EN PASSANT!')
                     current_board[y + 1][x] = 0
 
-
     # Castling White
     if current_object.model == Piece_class_stuff.Sprites.WK:
-        if (x, y) == (2, 7) and CastlingCheck_Variables.white_king_moved == 0 and Piece_class_stuff.Piece_Objects.Rook1 not in CastlingCheck_Variables.rooks_moved:  #  LONG
-            current_board, rooks_moved, CastlingCheck_Variables.white_king_moved = White_Castle_Long(current_board, CastlingCheck_Variables.rooks_moved)
+        if (x, y) == (2, 7) and Move_allowance.white_king_moved == 0 and Piece_class_stuff.Piece_Objects.Rook1 not in Move_allowance.rooks_moved:  #  LONG
+            current_board, rooks_moved, Move_allowance.white_king_moved = White_Castle_Long(current_board, Move_allowance.rooks_moved)
 
-        elif (x, y) == (6, 7) and CastlingCheck_Variables.white_king_moved == 0 and Piece_class_stuff.Piece_Objects.Rook2 not in CastlingCheck_Variables.rooks_moved:  # SHORT
-            current_board, rooks_moved, CastlingCheck_Variables.white_king_moved = White_Castle_Short(current_board, CastlingCheck_Variables.rooks_moved)
+        elif (x, y) == (6, 7) and Move_allowance.white_king_moved == 0 and Piece_class_stuff.Piece_Objects.Rook2 not in Move_allowance.rooks_moved:  # SHORT
+            current_board, rooks_moved, Move_allowance.white_king_moved = White_Castle_Short(current_board, Move_allowance.rooks_moved)
     # Castling Black
     if current_object.model == Piece_class_stuff.Sprites.BK:
-        if (x, y) == (2, 0) and CastlingCheck_Variables.black_king_moved == 0 and Piece_class_stuff.Piece_Objects.Rook3 not in CastlingCheck_Variables.rooks_moved:  # LONG
-            current_board, rooks_moved, CastlingCheck_Variables.black_king_moved = Black_Castle_Long(current_board, CastlingCheck_Variables.rooks_moved)
+        if (x, y) == (2, 0) and Move_allowance.black_king_moved == 0 and Piece_class_stuff.Piece_Objects.Rook3 not in Move_allowance.rooks_moved:  # LONG
+            current_board, rooks_moved, Move_allowance.black_king_moved = Black_Castle_Long(current_board, Move_allowance.rooks_moved)
 
-        elif (x, y) == (6, 0) and CastlingCheck_Variables.black_king_moved == 0 and Piece_class_stuff.Piece_Objects.Rook4 not in CastlingCheck_Variables.rooks_moved:  # SHORT
-            current_board, rooks_moved, CastlingCheck_Variables.black_king_moved = Black_Castle_Short(current_board, CastlingCheck_Variables.rooks_moved)
+        elif (x, y) == (6, 0) and Move_allowance.black_king_moved == 0 and Piece_class_stuff.Piece_Objects.Rook4 not in Move_allowance.rooks_moved:  # SHORT
+            current_board, rooks_moved, Move_allowance.black_king_moved = Black_Castle_Short(current_board, Move_allowance.rooks_moved)
 
 
     # Changing piece placement
@@ -570,25 +570,35 @@ def Move(last_moved_piece, current_board, current_object, x, y, previous_row, pr
         current_turn = Swap_Turns(current_turn)
 
     # Check if piece moved was a king or a rook, prevents castling with those pieces
-    if current_object.model == Piece_class_stuff.Sprites.WK:
-        w_king_moved = 1
-    elif current_object.model == Piece_class_stuff.Sprites.BK:
-        b_king_moved = 1
+    if current_object.model == Piece_class_stuff.Sprites.WK and Move_allowance.white_king_moved == 0:
+        Move_allowance.white_king_moved = 1
+    elif current_object.model == Piece_class_stuff.Sprites.BK and Move_allowance.black_king_moved == 0:
+        Move_allowance.black_king_moved = 1
     elif current_object.model == Piece_class_stuff.Sprites.WR or current_object.model == Piece_class_stuff.Sprites.BR:
-        CastlingCheck_Variables.rooks_moved.append(current_object)
+        if current_object not in Move_allowance.rooks_moved:
+            Move_allowance.rooks_moved.append(current_object)
 
     # Check if king was checked
     if Enemy_Piece_Check(current_object) == 1 and current_object.colour == Piece_class_stuff.Colour.BLACK:
-        CastlingCheck_Variables.white_check = 1
+        Move_allowance.white_check = 1
         print("White Check")
     elif Enemy_Piece_Check(current_object) == 1 and current_object.colour == Piece_class_stuff.Colour.WHITE:
-        CastlingCheck_Variables.black_check = 1
+        Move_allowance.black_check = 1
         print("Black Check")
 
-    # If move succeeded all checks, update the board, zero the variables, swap turns
-    #Update_board_state(board)
-    current_object = 0
-    previous_row = 0
-    previous_column = 0
-    current_turn = Swap_Turns(current_turn)
-    # Checkmate check
+
+    # Checkmate Check
+    if Move_allowance.white_check == 1:
+        if Checkmate_Check(board, Piece_class_stuff.Colour.WHITE) == 1:
+            print("White Checkmate!")
+            Move_allowance.checkmate = 1
+        else:
+            print("No checkmate")
+            Move_allowance.white_check = 0
+    elif Move_allowance.black_check == 1:
+        if Checkmate_Check(board, Piece_class_stuff.Colour.BLACK) == 1:
+            print("Black Checkmate!")
+            Move_allowance.checkmate = 1
+        else:
+            print("No checkmate")
+            Move_allowance.black_check = 0
