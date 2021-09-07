@@ -5,7 +5,6 @@ import PySimpleGUI as sg
 import copy
 import Game_move_logic
 from Piece_class_stuff import Colour,  Sprites
-import Bots
 # -------------------------------------PYGAME---------------------------------------------------------------------------
 
 
@@ -65,18 +64,6 @@ def Chess(game_type, player_colour):
 
     # Main game loop
     while True:
-
-        # Bot Move
-        if game_type != 0 and Game_move_logic.Move_allowance.current_turn != player_colour:
-            bot_move = Bots.Bot_Choice(game_type, Game_move_logic.board, bot_colour)
-            Game_move_logic.last_moved_piece = bot_move[0]
-            current_object = bot_move[0]
-            Game_move_logic.board[bot_move[0].column][bot_move[0].row] = 0  # Copy the piece to move location
-            Game_move_logic.board[bot_move[1][1]][bot_move[1][0]] = bot_move[0]  # Empty initial piece location
-            Update_board_state(Game_move_logic.board)
-            Game_move_logic.Move_allowance.current_turn = player_colour
-            print(letters[x] + str(y))
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -124,7 +111,7 @@ def Chess(game_type, player_colour):
                                 continue
 
                     else:  # If piece was clicked
-                        #print(x, y)
+                        print(x, y)
                         if Game_move_logic.board[y][x] != 0:
                             if Game_move_logic.Move_allowance.current_turn == Game_move_logic.board[y][x].colour:  # Check turn order
                                 object_dragging = True

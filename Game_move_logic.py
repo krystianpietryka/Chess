@@ -37,6 +37,41 @@ class Move_allowance:
     current_turn = Piece_class_stuff.Colour.WHITE
     previous_board = Copy_board(board)
 
+
+def Swap_Colour(p):
+    if p.colour == Piece_class_stuff.Colour.WHITE:
+        return Piece_class_stuff.Colour.BLACK
+    else:
+        return Piece_class_stuff.Colour.WHITE
+
+
+def Swap_Turns(colour):
+    if colour == Piece_class_stuff.Colour.WHITE:
+        colour = Piece_class_stuff.Colour.BLACK
+    else:
+        colour = Piece_class_stuff.Colour.WHITE
+    return colour
+
+
+def Checkmate_Check(current_board, colour):
+    count = 0
+    amount_of_pieces = 0
+    for line in current_board:
+        for p in line:
+            if p != 0 and p.colour == colour:
+                amount_of_pieces += 1
+                if p.model != Piece_class_stuff.Sprites.BK and p.model != Piece_class_stuff.Sprites.WK:
+                    if Friendly_Piece_Check(p) == 1:
+                        count += 1
+                else:
+                    if not King_Check(Possible_moves(p), colour):
+                        count += 1
+    if count == amount_of_pieces:
+        return 1
+    else:
+        return 0
+
+
 def White_Castle_Long(current_board, rooks):
     current_board[7][2] = Piece_class_stuff.Piece_Objects.King1
     current_board[7][3] = Piece_class_stuff.Piece_Objects.Rook1
@@ -135,10 +170,10 @@ def King_Check(m, king_colour):
 
 # Checks if a piece move puts enemy king in check
 def Enemy_Piece_Check(p, b):
-    for move in Possible_moves(p):
-        if b[move[0]][move[1]] != 0 and b[move[0]][move[1]].colour != p.colour:
-            if (b[move[0]][move[1]].model == Piece_class_stuff.Sprites.BK and p.colour == Piece_class_stuff.Colour.WHITE) or (b[move[0]][move[1]].model == Piece_class_stuff.Sprites.WK and p.colour == Piece_class_stuff.Colour.BLACK):
-                print("zwracam 1")
+    moves = Possible_moves(p)
+    for move in moves:
+        if b[move[1]][move[0]] != 0 and b[move[1]][move[0]].colour != p.colour:
+            if (b[move[1]][move[0]].model == Piece_class_stuff.Sprites.BK and p.colour == Piece_class_stuff.Colour.WHITE) or (b[move[1]][move[0]].model == Piece_class_stuff.Sprites.WK and p.colour == Piece_class_stuff.Colour.BLACK):
                 return 1
     return 0
 
@@ -152,7 +187,7 @@ def Friendly_Piece_Check(piece_colour):
                 moves = Possible_moves(p)
                 for move in moves:
                     if board[move[1]][move[0]] != 0:
-                        if (board[move[1]][move[0]].model == Piece_class_stuff.Sprites.BK) or (board[move[1]][move[0]].model == Piece_class_stuff.Sprites.WK):
+                        if (board[move[1]][move[0]].model == Piece_class_stuff.Sprites.BK and p.colour == Piece_class_stuff.Colour.BLACK) or (board[move[1]][move[0]].model == Piece_class_stuff.Sprites.WK and Piece_class_stuff.Colour.WHITE):
                             print("Move would expose the king")
                             return 0
     return 1
@@ -483,38 +518,6 @@ def Possible_moves(piece):
         return moves
 
 
-def Swap_Colour(p):
-    if p.colour == Piece_class_stuff.Colour.WHITE:
-        return Piece_class_stuff.Colour.BLACK
-    else:
-        return Piece_class_stuff.Colour.WHITE
-
-
-def Swap_Turns(colour):
-    if colour == Piece_class_stuff.Colour.WHITE:
-        colour = Piece_class_stuff.Colour.BLACK
-    else:
-        colour = Piece_class_stuff.Colour.WHITE
-    return colour
-
-
-def Checkmate_Check(current_board, colour):
-    count = 0
-    amount_of_pieces = 0
-    for line in current_board:
-        for p in line:
-            if p != 0 and p.colour == colour:
-                amount_of_pieces += 1
-                if p.model != Piece_class_stuff.Sprites.BK and p.model != Piece_class_stuff.Sprites.WK:
-                    if Friendly_Piece_Check(p) == 1:
-                        count += 1
-                else:
-                    if not King_Check(Possible_moves(p), colour):
-                        count += 1
-    if count == amount_of_pieces:
-        return 1
-    else:
-        return 0
 
 
 # Handles the logic of moving pieces on the board, returns the new boards state if move successful
@@ -560,14 +563,29 @@ def Move(current_board, current_object, x, y, previous_row, previous_column):
 
     # Changing piece placement
     Move_allowance.last_moved_piece = current_object
+
     current_board[y][x] = current_object  # Copy the piece to move location
+    current_object.row = x
+    current_object.column = y
     current_board[previous_column][previous_row] = 0  # Empty initial piece location
     print(letters[x] + str(y))
+
+
 
     # Checks whether a move exposes allied king, if it does revert board state
     if Friendly_Piece_Check(current_object.colour) == 0:
         move_success = 0
         return Move_allowance.previous_board, move_success
+
+    # Check if king was checked
+    if Enemy_Piece_Check(current_board[y][x], board) == 1 and current_board[y][
+        x].colour == Piece_class_stuff.Colour.BLACK:
+        Move_allowance.white_check = 1
+        print("White Check")
+    elif Enemy_Piece_Check(current_board[y][x], board) == 1 and current_board[y][
+        x].colour == Piece_class_stuff.Colour.WHITE:
+        Move_allowance.black_check = 1
+        print("Black Check")
 
     # Check if piece moved was a king or a rook, prevents castling with those pieces
     if current_object.model == Piece_class_stuff.Sprites.WK and Move_allowance.white_king_moved == 0:
@@ -585,13 +603,7 @@ def Move(current_board, current_object, x, y, previous_row, previous_column):
 
 
 
-    # Check if king was checked
-    if Enemy_Piece_Check(current_board[y][x], board) == 1 and current_board[y][x].colour == Piece_class_stuff.Colour.BLACK:
-        Move_allowance.white_check = 1
-        print("White Check")
-    elif Enemy_Piece_Check(current_board[y][x], board) == 1 and current_board[y][x].colour == Piece_class_stuff.Colour.WHITE:
-        Move_allowance.black_check = 1
-        print("Black Check")
+
 
     # Checkmate Check
     if Move_allowance.white_check == 1:
