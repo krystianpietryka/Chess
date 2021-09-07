@@ -79,6 +79,7 @@ def Coverage(p):
     for line in board:
         for ally in line:
             if ally != 0 and ally.colour != p.colour:
+                # noinspection PyTypeChecker
                 if (p.row, p.column) in Possible_moves(ally):
                     p.colour = Swap_Colour(p)
                     return 1
@@ -88,6 +89,7 @@ def Coverage(p):
 
 # Checks all opposite pieces on the board, compares their moves to potential king move,
 # if they match, king move gets removed, because he would put himself in check
+# noinspection PyTypeChecker
 def King_Check(m, king_colour):
     moves = copy.deepcopy(m)
     for move in moves:
@@ -133,18 +135,16 @@ def King_Check(m, king_colour):
 
 # Checks if a piece move puts enemy king in check
 def Enemy_Piece_Check(p, b):
-    moves = Possible_moves(p)
-    colour = p.colour
-    for move in moves:
-        print("possible move:", move[0], move[1])
-        if b[move[1]][move[0]] != 0:
-            if (b[move[1]][move[0]].model == Piece_class_stuff.Sprites.BK and colour == colour.WHITE) or (b[move[1]][move[0]].model == Piece_class_stuff.Sprites.WK and colour == colour.BLACK):
+    for move in Possible_moves(p):
+        if b[move[0]][move[1]] != 0 and b[move[0]][move[1]].colour != p.colour:
+            if (b[move[0]][move[1]].model == Piece_class_stuff.Sprites.BK and p.colour == Piece_class_stuff.Colour.WHITE) or (b[move[0]][move[1]].model == Piece_class_stuff.Sprites.WK and p.colour == Piece_class_stuff.Colour.BLACK):
                 print("zwracam 1")
                 return 1
     return 0
 
 
 # Checks if a move exposes a king
+# noinspection PyUnresolvedReferences,PyTypeChecker
 def Friendly_Piece_Check(piece_colour):
     for line in board:
         for p in line:
@@ -159,10 +159,12 @@ def Friendly_Piece_Check(piece_colour):
 
 
 # Function returns all possible move locations for a given piece, including castling and en passant
+# noinspection PyUnresolvedReferences
 def Possible_moves(piece):
     row = piece.row
     column = piece.column
     moves = []
+
     # White Pawn
     if piece.model == Piece_class_stuff.Sprites.WP:
         if piece.column != 0:
@@ -312,7 +314,6 @@ def Possible_moves(piece):
                 if board[piece.column - i][piece.row + i].colour != piece.colour:
                     moves.append((piece.row + i, piece.column - i))
                 break
-
         return moves
 
     # Kings
@@ -577,11 +578,18 @@ def Move(current_board, current_object, x, y, previous_row, previous_column):
         if current_object not in Move_allowance.rooks_moved:
             Move_allowance.rooks_moved.append(current_object)
 
+    # Check if check was interrupted
+    #if Move_allowance.white_check == 1 and Move_allowance.current_turn == Piece_class_stuff.Colour.WHITE:
+
+    #elif Move_allowance.black_check == 1 and Move_allowance.current_turn == Piece_class_stuff.Colour.BLACK:
+
+
+
     # Check if king was checked
     if Enemy_Piece_Check(current_board[y][x], board) == 1 and current_board[y][x].colour == Piece_class_stuff.Colour.BLACK:
         Move_allowance.white_check = 1
         print("White Check")
-    if Enemy_Piece_Check(current_board[y][x], board) == 1 and current_board[y][x].colour == Piece_class_stuff.Colour.WHITE:
+    elif Enemy_Piece_Check(current_board[y][x], board) == 1 and current_board[y][x].colour == Piece_class_stuff.Colour.WHITE:
         Move_allowance.black_check = 1
         print("Black Check")
 
@@ -592,7 +600,7 @@ def Move(current_board, current_object, x, y, previous_row, previous_column):
             Move_allowance.checkmate = 1
         else:
             print("No checkmate")
-            #Move_allowance.white_check = 0
+
     elif Move_allowance.black_check == 1:
         if Checkmate_Check(board, Piece_class_stuff.Colour.BLACK) == 1:
             print("Black Checkmate!")

@@ -104,6 +104,7 @@ def Chess(game_type, player_colour):
                                 if Game_move_logic.Move_allowance.checkmate == 0:
                                     move = Game_move_logic.Move(Game_move_logic.board, current_object, x, y, previous_row, previous_column)
                                     Game_move_logic.board = move[0]
+
                                     # If move succeeded all checks, update the board, zero the variables
                                     if move[1] == 1:
                                         pygame.mixer.Sound.play(move_sound)
@@ -123,7 +124,7 @@ def Chess(game_type, player_colour):
                                 continue
 
                     else:  # If piece was clicked
-                        print(x, y)
+                        #print(x, y)
                         if Game_move_logic.board[y][x] != 0:
                             if Game_move_logic.Move_allowance.current_turn == Game_move_logic.board[y][x].colour:  # Check turn order
                                 object_dragging = True
