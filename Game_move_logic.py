@@ -53,11 +53,13 @@ def Swap_Turns(colour):
     return colour
 
 
+# Checks all possible moves for one colour, and if none of them break check, then its checkmate
 def Checkmate_Check(current_board, colour):
     count = 0
     amount_of_pieces = 0
     for line in current_board:
         for p in line:
+            print("Count:", count)
             if p != 0 and p.colour == colour:
                 amount_of_pieces += 1
                 if p.model != Piece_class_stuff.Sprites.BK and p.model != Piece_class_stuff.Sprites.WK:
@@ -66,6 +68,7 @@ def Checkmate_Check(current_board, colour):
                 else:
                     if not King_Check(Possible_moves(p), colour):
                         count += 1
+    print("amount of ", colour, "coloured pieces on board: ", amount_of_pieces)
     if count == amount_of_pieces:
         return 1
     else:
@@ -571,7 +574,6 @@ def Move(current_board, current_object, x, y, previous_row, previous_column):
     print(letters[x] + str(y))
 
 
-
     # Checks whether a move exposes allied king, if it does revert board state
     if Friendly_Piece_Check(current_object.colour) == 0:
         move_success = 0
@@ -600,10 +602,6 @@ def Move(current_board, current_object, x, y, previous_row, previous_column):
     #if Move_allowance.white_check == 1 and Move_allowance.current_turn == Piece_class_stuff.Colour.WHITE:
 
     #elif Move_allowance.black_check == 1 and Move_allowance.current_turn == Piece_class_stuff.Colour.BLACK:
-
-
-
-
 
     # Checkmate Check
     if Move_allowance.white_check == 1:

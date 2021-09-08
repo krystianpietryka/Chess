@@ -168,7 +168,7 @@ def Main():
             window1.close()
         elif event == 'Free Play':
             print("gra")
-            free_play = 1
+            window2.close()
             Chess(0, Colour.WHITE)
         elif event == 'Random Bot (work in progress)':
             print("gra")
