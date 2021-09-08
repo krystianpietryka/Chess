@@ -101,7 +101,7 @@ def Chess(game_type, player_colour):
                                         previous_column = 0
                                         Game_move_logic.current_turn = Game_move_logic.Swap_Turns(Game_move_logic.Move_allowance.current_turn)
                                     else:
-                                        Game_move_logic.board = Game_move_logic.Move_allowance.previous_board
+                                        Game_move_logic.board = move[0]
                                         Update_board_state(Game_move_logic.board)
 
                             # Case if clicked cell is not possible for the piece to move to

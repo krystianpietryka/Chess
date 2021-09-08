@@ -59,15 +59,16 @@ def Checkmate_Check(current_board, colour):
     amount_of_pieces = 0
     for line in current_board:
         for p in line:
-            print("Count:", count)
             if p != 0 and p.colour == colour:
                 amount_of_pieces += 1
                 if p.model != Piece_class_stuff.Sprites.BK and p.model != Piece_class_stuff.Sprites.WK:
-                    if Friendly_Piece_Check(p) == 1:
+                    if Friendly_Piece_Check(p, current_board) == 0:
                         count += 1
+                        print("not king, Count:", count)
                 else:
                     if not King_Check(Possible_moves(p), colour):
                         count += 1
+                        print("king, Count:", count)
     print("amount of ", colour, "coloured pieces on board: ", amount_of_pieces)
     if count == amount_of_pieces:
         return 1
@@ -181,16 +182,15 @@ def Enemy_Piece_Check(p, b):
     return 0
 
 
-# Checks if a move exposes a king
-# noinspection PyUnresolvedReferences,PyTypeChecker
-def Friendly_Piece_Check(piece_colour):
-    for line in board:
+# Checks all enemy piece moves, if a king position is a move, return 0
+def Friendly_Piece_Check(piece_colour, b):
+    for line in b:
         for p in line:
             if p != 0 and p.colour != piece_colour:
                 moves = Possible_moves(p)
                 for move in moves:
-                    if board[move[1]][move[0]] != 0:
-                        if (board[move[1]][move[0]].model == Piece_class_stuff.Sprites.BK and p.colour == Piece_class_stuff.Colour.BLACK) or (board[move[1]][move[0]].model == Piece_class_stuff.Sprites.WK and Piece_class_stuff.Colour.WHITE):
+                    if b[move[1]][move[0]] != 0:
+                        if (b[move[1]][move[0]].model == Piece_class_stuff.Sprites.WK and p.colour == Piece_class_stuff.Colour.BLACK) or (b[move[1]][move[0]].model == Piece_class_stuff.Sprites.BK and p.colour == Piece_class_stuff.Colour.WHITE):
                             print("Move would expose the king")
                             return 0
     return 1
@@ -575,7 +575,7 @@ def Move(current_board, current_object, x, y, previous_row, previous_column):
 
 
     # Checks whether a move exposes allied king, if it does revert board state
-    if Friendly_Piece_Check(current_object.colour) == 0:
+    if Friendly_Piece_Check(current_object.colour, current_board) == 0:
         move_success = 0
         return Move_allowance.previous_board, move_success
 
@@ -617,7 +617,6 @@ def Move(current_board, current_object, x, y, previous_row, previous_column):
             Move_allowance.checkmate = 1
         else:
             print("No checkmate")
-            #Move_allowance.black_check = 0
 
     # Continue turn order, return board state and that move was successful
     Move_allowance.current_turn = Swap_Turns(Move_allowance.current_turn)
