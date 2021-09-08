@@ -629,7 +629,7 @@ def Move(current_board, current_object, x, y, previous_row, previous_column):
         else:
             print("No checkmate")
 
-    # Check if check was interrupted
+    # Check if check was interrupted, if it was disable check mode
     if Move_allowance.white_check == 1 and Move_allowance.current_turn == Piece_class_stuff.Colour.WHITE:
         if Check_Interrupted(current_board, Piece_class_stuff.Colour.WHITE) == 1:
             Move_allowance.white_check = 0
