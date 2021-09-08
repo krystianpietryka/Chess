@@ -165,6 +165,7 @@ def Main():
         elif event == 'Single Player' and not window2:
             print('Single')
             window2 = Single_Player()
+            window1.close()
         elif event == 'Free Play':
             print("gra")
             free_play = 1
