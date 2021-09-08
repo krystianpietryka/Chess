@@ -157,7 +157,10 @@ def Main():
     while True:
         window, event, values = sg.read_all_windows()
         if event == sg.WIN_CLOSED or event == 'Exit':
-            window2.close()
+            if window2:
+                window2.close()
+            else:
+                window1.close()
             if window == window2:  # if closing win 2, mark as closed
                 window2 = None
             elif window == window1:  # if closing win 1, exit program
