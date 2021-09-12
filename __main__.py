@@ -73,12 +73,15 @@ def Chess(game_type, player_colour):
             if game_type == 1:  # Random Bot
                 bot_variables = Bots.Random_Bot(Game_move_logic.board, bot_colour)
                 move = Game_move_logic.Move(Game_move_logic.board, bot_variables[0], bot_variables[1][0], bot_variables[1][1], bot_variables[0].row, bot_variables[0].column)
-                Game_move_logic.board = move[0]
-                pygame.time.wait(random.randint(300, 1200))
-                pygame.mixer.Sound.play(move_sound)
+                if move[1] == 1:
+                    current_turn = player_colour
+                    pygame.time.wait(random.randint(300, 1200))
+                    pygame.mixer.Sound.play(move_sound)
+                    #print(letters[x] + str(y))
+                else:
+                    Game_move_logic.board = move[0]
+                    current_turn = bot_colour
                 Update_board_state(Game_move_logic.board)
-                current_turn = player_colour
-                #print(letters[x] + str(y))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -109,15 +112,13 @@ def Chess(game_type, player_colour):
                                 # If move succeeded all checks, update the board, zero the variables
                                 if move[1] == 1:
                                     pygame.mixer.Sound.play(move_sound)
-                                    Update_board_state(Game_move_logic.board)
                                     current_object = 0
                                     previous_row = 0
                                     previous_column = 0
                                     Game_move_logic.current_turn = Game_move_logic.Swap_Turns(Game_move_logic.Move_allowance.current_turn)
                                 else:
                                     Game_move_logic.board = move[0]
-                                    Update_board_state(Game_move_logic.board)
-
+                                Update_board_state(Game_move_logic.board)
                             # Case if clicked cell is not possible for the piece to move to
                             else:
                                 print('Disallowed move')

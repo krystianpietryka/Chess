@@ -59,7 +59,8 @@ def Checkmate_Check(current_board, colour):
 
 # Makes a move on the temp_board and checks if the friendly king is in check
 # Problem nie jest z funkcja sprawdzajaca check, tylko w jakis sposob z temp plansza
-def Is_Board_In_Check(b, move,  piece):
+def Is_Board_In_Check(temp_board, move,  piece):
+    b = Copy_board(temp_board)
     b[piece.column][piece.row] = 0
     b[move[1]][move[0]] = piece
     piece.row = move[0]
@@ -650,6 +651,6 @@ def Move(current_board, current_object, x, y, previous_row, previous_column):
 
 
 
-    # Continue turn order, return board state and that move was successful
+    # Continue turn order, return board state and move success
     Move_allowance.current_turn = Swap_Turns(Move_allowance.current_turn)
     return current_board, move_success
