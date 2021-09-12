@@ -3,8 +3,8 @@
 I have always had this idea of making a viable chess simulation in the back of my head, so that is the reason for me building this project.
 It helped me flesh out my OOP and python knowledge.
 ## Installation
-Run __main__.py.
-Natively a pycharm project.
+Run __main__.py.\
+Natively a pycharm project.\
 [![Linux](https://svgshare.com/i/Zhy.svg)](https://svgshare.com/i/Zhy.svg) [![Windows](https://svgshare.com/i/ZhY.svg)](https://svgshare.com/i/ZhY.svg)
 ## Usage
 There are 2 main game modes:
