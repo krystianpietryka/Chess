@@ -37,20 +37,23 @@ class Move_allowance:
     current_turn = Piece_class_stuff.Colour.WHITE
     previous_board = Copy_board(board)
 
+def Is_Board_In_Check(temp_board, move,  piece):
+    temp_board[piece.column][piece.row] = 0
+    temp_board[move[1]][move[0]] = piece
+    if Friendly_Piece_Check(Swap_Colour(piece), temp_board) == 1:
+        return 1
+    else:
+        return 0
 
 # Check every possible move for a piece, if the piece can cover king from check return 1
+# This function returns incorrect values, shows that a piece can save the king in a situation
+# where it indeed cannot
 def Can_Piece_Save_King(piece, b):
-    enemy_colour = Swap_Colour(piece)
     temp_board = Copy_board(b)
-    default_board = Copy_board(temp_board)
     moves = Possible_moves(piece)
     for move in moves:  # Iterate over possible moves on temporary board
-        temp_board[move[1]][move[0]] = piece
-        temp_board[piece.column][piece.row] = 0
-        if Friendly_Piece_Check(enemy_colour, temp_board) == 1:
+        if Is_Board_In_Check(temp_board, move,  piece) == 1:
             return 1
-        else:
-            temp_board = Copy_board(default_board)
     return 0
 
 
