@@ -3,7 +3,7 @@ import os
 import pygame
 import PySimpleGUI as sg
 import copy
-
+import random
 import Bots
 import Game_move_logic
 from Piece_class_stuff import Colour,  Sprites
@@ -74,6 +74,8 @@ def Chess(game_type, player_colour):
                 bot_variables = Bots.Random_Bot(Game_move_logic.board, bot_colour)
                 move = Game_move_logic.Move(Game_move_logic.board, bot_variables[0], bot_variables[1][0], bot_variables[1][1], bot_variables[0].row, bot_variables[0].column)
                 Game_move_logic.board = move[0]
+                pygame.time.wait(random.randint(300, 1200))
+                pygame.mixer.Sound.play(move_sound)
                 Update_board_state(Game_move_logic.board)
                 current_turn = player_colour
                 #print(letters[x] + str(y))
