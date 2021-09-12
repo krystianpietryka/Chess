@@ -5,6 +5,7 @@ It helped me flesh out my OOP and python knowledge.
 ## Installation
 Run __main__.py.
 Natively a pycharm project.
+[![Linux](https://svgshare.com/i/Zhy.svg)](https://svgshare.com/i/Zhy.svg) [![Windows](https://svgshare.com/i/ZhY.svg)](https://svgshare.com/i/ZhY.svg)
 ## Usage
 There are 2 main game modes:
 - Singleplayer - Free play, variety of Bots.
