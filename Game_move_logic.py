@@ -25,7 +25,7 @@ board = [[Piece_class_stuff.Piece_Objects.Rook3, Piece_class_stuff.Piece_Objects
          [Piece_class_stuff.Piece_Objects.Rook1, Piece_class_stuff.Piece_Objects.Knight1, Piece_class_stuff.Piece_Objects.Bishop1, Piece_class_stuff.Piece_Objects.Queen1, Piece_class_stuff.Piece_Objects.King1, Piece_class_stuff.Piece_Objects.Bishop2, Piece_class_stuff.Piece_Objects.Knight2, Piece_class_stuff.Piece_Objects.Rook2]]
 
 
-# Variables used in allowing or dissalowing moves
+# Variables used in allowing/dissallowing moves
 class Move_allowance:
     rooks_moved = []
     black_king_moved = 0
@@ -37,10 +37,11 @@ class Move_allowance:
     current_turn = Piece_class_stuff.Colour.WHITE
     previous_board = Copy_board(board)
 
+# Makes a move on the temp_board and checks if the king is in check
 def Is_Board_In_Check(temp_board, move,  piece):
     temp_board[piece.column][piece.row] = 0
     temp_board[move[1]][move[0]] = piece
-    if Friendly_Piece_Check(Swap_Colour(piece), temp_board) == 1:
+    if Friendly_Piece_Check(piece.colour, temp_board) == 1:
         return 1
     else:
         return 0
@@ -202,10 +203,10 @@ def Enemy_Piece_Check(p, b):
 
 
 # Checks all enemy piece moves, if a king position is a move, that means that the move exposed the king
-def Friendly_Piece_Check(piece_colour, b):
+def Friendly_Piece_Check(checked_colour, b):
     for line in b:
         for p in line:
-            if p != 0 and p.colour != piece_colour:
+            if p != 0 and p.colour != checked_colour:
                 moves = Possible_moves(p)
                 for move in moves:
                     if b[move[1]][move[0]] != 0:

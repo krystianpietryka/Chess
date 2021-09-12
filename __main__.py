@@ -3,6 +3,8 @@ import os
 import pygame
 import PySimpleGUI as sg
 import copy
+
+import Bots
 import Game_move_logic
 from Piece_class_stuff import Colour,  Sprites
 # -------------------------------------PYGAME---------------------------------------------------------------------------
@@ -64,6 +66,14 @@ def Chess(game_type, player_colour):
 
     # Main game loop
     while True:
+        if Game_move_logic.Move_allowance.checkmate == 1:
+            break
+        # BOT STUFF
+        if game_type != 0 and Game_move_logic.Move_allowance.current_turn != player_colour:
+            if game_type == 1:  # Random Bot
+                bot_variables = Bots.Random_Bot(Game_move_logic.board, bot_colour)
+                move = Game_move_logic.Move(Game_move_logic.board, bot_variables[0], bot_variables[1][0], bot_variables[1][1], previous_row, previous_column)
+                Game_move_logic.board = move[0]
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -88,21 +98,20 @@ def Chess(game_type, player_colour):
                         if current_object != 0:
                             object_dragging = False
                             if (x, y) in Game_move_logic.Possible_moves(current_object):
-                                if Game_move_logic.Move_allowance.checkmate == 0:
-                                    move = Game_move_logic.Move(Game_move_logic.board, current_object, x, y, previous_row, previous_column)
+                                move = Game_move_logic.Move(Game_move_logic.board, current_object, x, y, previous_row, previous_column)
+                                Game_move_logic.board = move[0]
+                                Update_board_state(Game_move_logic.board)
+                                # If move succeeded all checks, update the board, zero the variables
+                                if move[1] == 1:
+                                    pygame.mixer.Sound.play(move_sound)
+                                    Update_board_state(Game_move_logic.board)
+                                    current_object = 0
+                                    previous_row = 0
+                                    previous_column = 0
+                                    Game_move_logic.current_turn = Game_move_logic.Swap_Turns(Game_move_logic.Move_allowance.current_turn)
+                                else:
                                     Game_move_logic.board = move[0]
-
-                                    # If move succeeded all checks, update the board, zero the variables
-                                    if move[1] == 1:
-                                        pygame.mixer.Sound.play(move_sound)
-                                        Update_board_state(Game_move_logic.board)
-                                        current_object = 0
-                                        previous_row = 0
-                                        previous_column = 0
-                                        Game_move_logic.current_turn = Game_move_logic.Swap_Turns(Game_move_logic.Move_allowance.current_turn)
-                                    else:
-                                        Game_move_logic.board = move[0]
-                                        Update_board_state(Game_move_logic.board)
+                                    Update_board_state(Game_move_logic.board)
 
                             # Case if clicked cell is not possible for the piece to move to
                             else:
