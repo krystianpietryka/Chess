@@ -1,4 +1,4 @@
-from Piece_class_stuff import *
+from Piece_class_stuff import Piece_Objects, Sprites, Colour
 import copy
 
 
@@ -43,6 +43,7 @@ def Coverage(p):
 
 # Checks all opposite pieces on the board, compares their moves to potential king move,
 # if they match, king move gets removed, because he would put himself in check
+# noinspection PyTypeChecker
 def King_Check(m, king_colour):
     moves = copy.deepcopy(m)
     for move in moves:
@@ -87,31 +88,25 @@ def King_Check(m, king_colour):
 
 
 # Checks if a piece move puts enemy king in check
-def Enemy_Piece_Check(p):
+def Enemy_Piece_Check(p, b):
     moves = Possible_moves(p)
-    colour = p.colour
     for move in moves:
-        if board[move[1]][move[0]] != 0:
-            if (board[move[1]][move[0]].model == Sprites.BK and colour == colour.WHITE) or (board[move[1]][move[0]].model == Sprites.WK and colour == colour.BLACK):
-                if colour == colour.WHITE:
-                    return 1
-                else:
-                    return 1
+        if b[move[1]][move[0]] != 0 and b[move[1]][move[0]].colour != p.colour:
+            if (b[move[1]][move[0]].model == Sprites.BK and p.colour == Colour.WHITE) or (b[move[1]][move[0]].model == Sprites.WK and p.colour == Colour.BLACK):
+                return 1
     return 0
 
 
-# Checks if a move exposes a king
-def Friendly_Piece_Check(piece_colour):
-    for line in board:
+# Checks all enemy piece moves, if a king position is a move, that means that the move exposed the king
+def Friendly_Piece_Check(checked_colour, b):
+    for line in b:
         for p in line:
-            if p != 0 and p.colour != piece_colour:
+            if p != 0 and p.colour != checked_colour:
                 moves = Possible_moves(p)
                 for move in moves:
-                    if board[move[1]][move[0]] != 0:
-                        if (board[move[1]][move[0]].model == Sprites.BK) or (board[move[1]][move[0]].model == Sprites.WK):
-                            print("Move would expose the king")
+                    if b[move[1]][move[0]] != 0:
+                        if (b[move[1]][move[0]].model == Sprites.WK and p.colour == Colour.BLACK) or (b[move[1]][move[0]].model == Sprites.BK and p.colour == Colour.WHITE):
                             return 0
-
     return 1
 
 

@@ -181,7 +181,7 @@ def Chess(game_type, player_colour):
                                 print(letters[x] + str(y))
 
                                 # Checks whether a move exposes allied king, if it does revert board state
-                                if Game_move_logic.Friendly_Piece_Check(current_object.colour) == 0:
+                                if Game_move_logic.Friendly_Piece_Check(current_object.colour, Game_move_logic.board) == 0:
                                     Game_move_logic.board = previous_board
                                     current_turn = Game_move_logic.Swap_Turns(current_turn)
 
@@ -195,10 +195,10 @@ def Chess(game_type, player_colour):
                                     Game_move_logic.rooks_moved.append(current_object)
 
                                 # Check if king was checked
-                                if Game_move_logic.Enemy_Piece_Check(current_object) == 1 and current_object.colour == Colour.BLACK:
+                                if Game_move_logic.Enemy_Piece_Check(current_object, Game_move_logic.board) == 1 and current_object.colour == Colour.BLACK:
                                     Game_move_logic.white_check = 1
                                     print("White Check")
-                                elif Game_move_logic.Enemy_Piece_Check(current_object) == 1 and current_object.colour == Colour.WHITE:
+                                elif Game_move_logic.Enemy_Piece_Check(current_object, Game_move_logic.board) == 1 and current_object.colour == Colour.WHITE:
                                     Game_move_logic.black_check = 1
                                     print("Black Check")
 
