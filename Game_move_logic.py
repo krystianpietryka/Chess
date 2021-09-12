@@ -37,25 +37,46 @@ class Move_allowance:
     current_turn = Piece_class_stuff.Colour.WHITE
     previous_board = Copy_board(board)
 
-# Makes a move on the temp_board and checks if the king is in check
-def Is_Board_In_Check(temp_board, move,  piece):
-    temp_board[piece.column][piece.row] = 0
-    temp_board[move[1]][move[0]] = piece
-    if Friendly_Piece_Check(piece.colour, temp_board) == 1:
-        return 1
-    else:
-        return 0
+
+# Checks all possible moves for pieces of one colour, and if none of them break check, then its checkmate
+def Checkmate_Check(current_board, colour):
+    for line in current_board:
+        for p in line:
+            if p != 0 and p.colour == colour:
+                if p.model == Piece_class_stuff.Sprites.BK or p.model == Piece_class_stuff.Sprites.WK: # King
+                    if King_Check(Possible_moves(p), colour):
+                        print("king can escape")
+                        return 0
+                elif Can_Piece_Save_King(p, current_board) == 1: # Not a king
+                    print("piece at: ", p.row, p.column, "can cover")
+                    if p.model == Piece_class_stuff.Sprites.BH:
+                        print("horse")
+                    return 0
+    return 1
+
+
+# Makes a move on the temp_board and checks if the friendly king is in check
+# Problem nie jest z funkcja sprawdzajaca check, tylko w jakis sposob z temp plansza
+def Is_Board_In_Check(b, move,  piece):
+    temp_board = Copy_board(b)
+    for line in board:
+        for enemy in line:
+            if enemy != 0 and enemy.colour != piece.colour:
+                if Enemy_Piece_Check(enemy, temp_board) == 1:
+                    return 0    # King will still be in check
+    return 1    # King will be covered
+
 
 # Check every possible move for a piece, if the piece can cover king from check return 1
 # This function returns incorrect values, shows that a piece can save the king in a situation
 # where it indeed cannot
 def Can_Piece_Save_King(piece, b):
-    temp_board = Copy_board(b)
     moves = Possible_moves(piece)
     for move in moves:  # Iterate over possible moves on temporary board
-        if Is_Board_In_Check(temp_board, move,  piece) == 1:
-            return 1
-    return 0
+        print(piece, move)
+        if Is_Board_In_Check(b, move,  piece) == 0: # Board not in check
+            return 1    # Piece can save
+    return 0    # Piece cannot save
 
 
 def Check_Interrupted(b, check_colour):
@@ -80,21 +101,6 @@ def Swap_Turns(colour):
     else:
         colour = Piece_class_stuff.Colour.WHITE
     return colour
-
-
-# Checks all possible moves for pieces of one colour, and if none of them break check, then its checkmate
-def Checkmate_Check(current_board, colour):
-    for line in current_board:
-        for p in line:
-            if p != 0 and p.colour == colour:
-                if p.model == Piece_class_stuff.Sprites.BK or p.model == Piece_class_stuff.Sprites.WK: # King
-                    if King_Check(Possible_moves(p), colour):
-                        return 0
-                elif Can_Piece_Save_King(p, current_board) == 1: # Not a king
-                    return 0
-    return 1
-
-
 
 def White_Castle_Long(current_board, rooks):
     current_board[7][2] = Piece_class_stuff.Piece_Objects.King1
@@ -138,7 +144,6 @@ def Coverage(p):
     for line in board:
         for ally in line:
             if ally != 0 and ally.colour != p.colour:
-                # noinspection PyTypeChecker
                 if (p.row, p.column) in Possible_moves(ally):
                     p.colour = Swap_Colour(p)
                     return 1
@@ -198,8 +203,8 @@ def Enemy_Piece_Check(p, b):
     for move in moves:
         if b[move[1]][move[0]] != 0 and b[move[1]][move[0]].colour != p.colour:
             if (b[move[1]][move[0]].model == Piece_class_stuff.Sprites.BK and p.colour == Piece_class_stuff.Colour.WHITE) or (b[move[1]][move[0]].model == Piece_class_stuff.Sprites.WK and p.colour == Piece_class_stuff.Colour.BLACK):
-                return 1
-    return 0
+                return 1    # Move checked enemy king
+    return 0    # Move did not check enemy king
 
 
 # Checks all enemy piece moves, if a king position is a move, that means that the move exposed the king
@@ -211,8 +216,8 @@ def Friendly_Piece_Check(checked_colour, b):
                 for move in moves:
                     if b[move[1]][move[0]] != 0:
                         if (b[move[1]][move[0]].model == Piece_class_stuff.Sprites.WK and p.colour == Piece_class_stuff.Colour.BLACK) or (b[move[1]][move[0]].model == Piece_class_stuff.Sprites.BK and p.colour == Piece_class_stuff.Colour.WHITE):
-                            return 0
-    return 1
+                            return 0    # Move would expose the king
+    return 1    # Move is valid
 
 
 # Function returns all possible move locations for a given piece, including castling and en passant
@@ -608,6 +613,7 @@ def Move(current_board, current_object, x, y, previous_row, previous_column):
         if current_object not in Move_allowance.rooks_moved:
             Move_allowance.rooks_moved.append(current_object)
 
+
     # Check if king was checked
     if Enemy_Piece_Check(current_board[y][x], board) == 1 and current_board[y][
         x].colour == Piece_class_stuff.Colour.BLACK:
@@ -618,7 +624,18 @@ def Move(current_board, current_object, x, y, previous_row, previous_column):
         Move_allowance.black_check = 1
         print("Black Check")
 
-    # Checkmate Check
+
+    # Check if check was interrupted, if it was disable check mode
+    if Move_allowance.white_check == 1 and Move_allowance.current_turn == Piece_class_stuff.Colour.WHITE:
+        if Check_Interrupted(current_board, Piece_class_stuff.Colour.WHITE) == 1:
+            Move_allowance.white_check = 0
+    elif Move_allowance.black_check == 1 and Move_allowance.current_turn == Piece_class_stuff.Colour.BLACK:
+        if Check_Interrupted(current_board, Piece_class_stuff.Colour.BLACK) == 1:
+            Move_allowance.black_check = 0
+            #print("Check interrupted")
+
+
+     # Checkmate Check
     if Move_allowance.white_check == 1:
         if Checkmate_Check(board, Piece_class_stuff.Colour.WHITE) == 1:
             print("White Checkmate!")
@@ -633,13 +650,6 @@ def Move(current_board, current_object, x, y, previous_row, previous_column):
         else:
             print("No checkmate")
 
-    # Check if check was interrupted, if it was disable check mode
-    if Move_allowance.white_check == 1 and Move_allowance.current_turn == Piece_class_stuff.Colour.WHITE:
-        if Check_Interrupted(current_board, Piece_class_stuff.Colour.WHITE) == 1:
-            Move_allowance.white_check = 0
-    elif Move_allowance.black_check == 1 and Move_allowance.current_turn == Piece_class_stuff.Colour.BLACK:
-        if Check_Interrupted(current_board, Piece_class_stuff.Colour.BLACK) == 1:
-            Move_allowance.black_check = 0
 
 
     # Continue turn order, return board state and that move was successful
