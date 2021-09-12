@@ -12,4 +12,4 @@ There are 2 main game modes:
 ## Credits
 Thanks to https://github.com/Michael-Czekanski for helping me get rid of bugs, and with advice about piece movement design.
 ## License
-MIT License
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
