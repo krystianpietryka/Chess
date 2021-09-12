@@ -68,12 +68,15 @@ def Chess(game_type, player_colour):
     while True:
         if Game_move_logic.Move_allowance.checkmate == 1:
             break
-        # BOT STUFF
+        # BOT STUFF ! Need to restrict movement under check, currently does 2 moves after checked
         if game_type != 0 and Game_move_logic.Move_allowance.current_turn != player_colour:
             if game_type == 1:  # Random Bot
                 bot_variables = Bots.Random_Bot(Game_move_logic.board, bot_colour)
-                move = Game_move_logic.Move(Game_move_logic.board, bot_variables[0], bot_variables[1][0], bot_variables[1][1], previous_row, previous_column)
+                move = Game_move_logic.Move(Game_move_logic.board, bot_variables[0], bot_variables[1][0], bot_variables[1][1], bot_variables[0].row, bot_variables[0].column)
                 Game_move_logic.board = move[0]
+                Update_board_state(Game_move_logic.board)
+                current_turn = player_colour
+                #print(letters[x] + str(y))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
