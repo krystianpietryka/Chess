@@ -4,7 +4,7 @@ I have always had this idea of making a viable chess simulation in the back of m
 It helped me flesh out my OOP and python knowledge.
 ## Installation
 Not required, run __main__.py.\
-Natively a pycharm project.\
+Natively a pycharm project.\\
 [![Linux](https://svgshare.com/i/Zhy.svg)](https://svgshare.com/i/Zhy.svg) [![Windows](https://svgshare.com/i/ZhY.svg)](https://svgshare.com/i/ZhY.svg)
 ## Usage
 There are 2 main game modes:
