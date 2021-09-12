@@ -189,6 +189,7 @@ def Main():
             Chess(0, Colour.WHITE)
         elif event == 'Random Bot (work in progress)':
             print("gra")
+            window2.close()
             Chess(1, Colour.WHITE)
     window.close()
 
