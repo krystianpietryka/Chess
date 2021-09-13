@@ -116,6 +116,7 @@ def Chess(game_type, player_colour):
                                     previous_row = 0
                                     previous_column = 0
                                     Game_move_logic.current_turn = Game_move_logic.Swap_Turns(Game_move_logic.Move_allowance.current_turn)
+                                    print("Score: ", Bots.Shannon_Evaluation(Game_move_logic.board))
                                 else:
                                     Game_move_logic.board = move[0]
                                 Update_board_state(Game_move_logic.board)
