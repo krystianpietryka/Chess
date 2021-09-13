@@ -31,12 +31,12 @@ def Shannon_Evaluation(board):
                 if p.model == Sprites.WP:
                     score -= Doubled_Pawns(board, p)
                     score -= Blocked_Pawns(board, p)
-                    #score -= Isolated_Pawns(board, p)
+                    score -= Isolated_Pawns(board, p)
                     score += 1
                 elif p.model == Sprites.BP:
                     score += Doubled_Pawns(board, p)
                     score += Blocked_Pawns(board, p)
-                    #score += Isolated_Pawns(board, p)
+                    score += Isolated_Pawns(board, p)
                     score -= 1
                 elif p.model == Sprites.WB:
                     score += 3
