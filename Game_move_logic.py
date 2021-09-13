@@ -39,7 +39,8 @@ class Move_allowance:
 
 
 # Checks all possible moves for pieces of one colour, and if none of them break check, then its checkmate
-def Checkmate_Check(current_board, colour):
+def Checkmate_Check(original_board, colour):
+    current_board = Copy_board(original_board)
     for line in current_board:
         for p in line:
             if p != 0 and p.colour == colour:
@@ -68,7 +69,7 @@ def Is_Board_In_Check(temp_board, move,  piece):
     for line in board:
         for enemy in line:
             if enemy != 0 and enemy.colour != piece.colour:
-                if Enemy_Piece_Check(enemy, b) == 1:
+                if Friendly_Piece_Check(piece.colour, b) == 1:
                     return 0    # King will still be in check
     return 1    # King will be covered
 
@@ -219,11 +220,8 @@ def Friendly_Piece_Check(checked_colour, b):
     for line in b:
         for p in line:
             if p != 0 and p.colour != checked_colour:
-                moves = Possible_moves(p)
-                for move in moves:
-                    if b[move[1]][move[0]] != 0:
-                        if (b[move[1]][move[0]].model == Piece_class_stuff.Sprites.WK and p.colour == Piece_class_stuff.Colour.BLACK) or (b[move[1]][move[0]].model == Piece_class_stuff.Sprites.BK and p.colour == Piece_class_stuff.Colour.WHITE):
-                            return 0    # Move would expose the king
+                if Enemy_Piece_Check(p, b) == 1:
+                    return 0    # Move invalid
     return 1    # Move is valid
 
 
@@ -635,6 +633,7 @@ def Move(current_board, current_object, x, y, previous_row, previous_column):
             #print("Check interrupted")
 
     # Checkmate Check
+    '''
     if Move_allowance.white_check == 1:
         if Checkmate_Check(current_board, Piece_class_stuff.Colour.WHITE) == 1:
             print("White Checkmate!")
@@ -648,7 +647,7 @@ def Move(current_board, current_object, x, y, previous_row, previous_column):
             Move_allowance.checkmate = 1
         else:
             print("No checkmate")
-
+'''
 
 
     # Continue turn order, return board state and move success
