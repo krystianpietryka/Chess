@@ -58,6 +58,8 @@ def Shannon_Evaluation(board):
                     score += 200
                 elif p.model == Sprites.BK:
                     score -= 200
+    score += Mobility(board)
+    score = round(score, 1)
     return score
 
 
@@ -87,6 +89,7 @@ def Isolated_Pawns(board, pawn):
                     pass
     return 0.5
 
+
 # Checks if a pawn blocks a pawn
 def Doubled_Pawns(board, pawn):
     if pawn.colour == Colour.WHITE:
@@ -99,7 +102,15 @@ def Doubled_Pawns(board, pawn):
         return 0
 
 
+# Count the amount of possible moves for a given piece colour
 def Mobility(board):
     score = 0
-
+    for line in board:
+        for piece in line:
+            if piece != 0:
+                moves = Possible_moves(piece)
+                if piece.colour == Colour.WHITE:
+                    score += (len(moves) * 0.1)    # Every possible move is worth 0,1 score
+                else:
+                    score -= (len(moves) * 0.1)
     return score

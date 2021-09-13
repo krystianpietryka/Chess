@@ -127,7 +127,7 @@ def Chess(game_type, player_colour):
                                 continue
 
                     else:  # If piece was clicked
-                        print(x, y)
+                        #print(x, y)
                         if Game_move_logic.board[y][x] != 0:
                             if Game_move_logic.Move_allowance.current_turn == Game_move_logic.board[y][x].colour:  # Check turn order
                                 object_dragging = True
