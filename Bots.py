@@ -1,6 +1,6 @@
 import random
 from Game_move_logic import Possible_moves
-from Piece_class_stuff import Sprites
+from Piece_class_stuff import Sprites, Colour
 
 
 def Bot_Choice(number, b, colour):
@@ -22,14 +22,21 @@ def Random_Bot(b, colour):
     return move
 
 
+# Evaluates board score (Used in MiniMax algorithm)
 def Shannon_Evaluation(board):
     score = 0
     for line in board:
         for p in line:
             if p != 0:
                 if p.model == Sprites.WP:
+                    score -= Doubled_Pawns(board, p)
+                    score -= Blocked_Pawns(board, p)
+                    #score -= Isolated_Pawns(board, p)
                     score += 1
                 elif p.model == Sprites.BP:
+                    score += Doubled_Pawns(board, p)
+                    score += Blocked_Pawns(board, p)
+                    #score += Isolated_Pawns(board, p)
                     score -= 1
                 elif p.model == Sprites.WB:
                     score += 3
@@ -56,7 +63,7 @@ def Shannon_Evaluation(board):
 
 # Checks if a piece blocks pawns advance
 def Blocked_Pawns(board, pawn):
-    if pawn.colour == 0:
+    if pawn.colour == Colour.WHITE:
         if board[pawn.column-1][pawn.row] != 0:
             return 0.5
         return 0
@@ -67,34 +74,22 @@ def Blocked_Pawns(board, pawn):
 
 
 # Checks if a pawn is not in a pawn chain (no adjacent pawns of the same colour)
+# !DOES NOT WORK CURRENTLY
 def Isolated_Pawns(board, pawn):
-    column = -1
-    row = -1
-    if pawn.colour == 0:
-        for i in range(3):
-            for j in range(3):
-                if pawn.column + column != pawn.column and pawn.row + row != pawn.row:
-                    if board[pawn.column + column][pawn.row + row] != 0 and board[pawn.column + column][pawn.row + row].model == Sprites.WP:
-                        return 0
-                row += 1
-            row = -1
-            column += 1
-        return 0.5
-    else:
-        for i in range(3):
-            for j in range(3):
-                if pawn.column + column != pawn.column and pawn.row + row != pawn.row:
-                    if board[pawn.column + column][pawn.row + row] != 0 and board[pawn.column + column][
-                        pawn.row + row].model == Sprites.BP:
-                        return 0
-                row += 1
-            row = -1
-            column += 1
-        return 0.5
+    for column in range(-1, 2, 1):
+        for row in range(-1, 2, 1):
+            if pawn.column + column != pawn.column and pawn.row + row != pawn.row:
+                try:
+                    if board[pawn.column + column][pawn.row + row] != 0:
+                        if board[pawn.column + column][pawn.row + row].model == pawn.model:
+                            return 0
+                except IndexError:
+                    pass
+    return 0.5
 
-
+# Checks if a pawn blocks a pawn
 def Doubled_Pawns(board, pawn):
-    if pawn.colour == 0:
+    if pawn.colour == Colour.WHITE:
         if board[pawn.column - 1][pawn.row] != 0 and board[pawn.column - 1][pawn.row].model == Sprites.WP:
             return 0.5
         return 0
