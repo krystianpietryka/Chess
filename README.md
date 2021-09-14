@@ -12,6 +12,6 @@ There are 2 main game modes:
 - Singleplayer - Free play, variety of Bots.
 - Multiplayer - not implemented yet
 ## Credits
-Thanks to https://github.com/Michael-Czekanski for helping me get rid of bugs, and with in about piece movement design.
+Thanks to https://github.com/Michael-Czekanski for helping me get rid of bugs, and with advice in piece movement design.
 ## License
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
