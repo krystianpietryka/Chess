@@ -1,5 +1,5 @@
 import random
-from Game_move_logic import Possible_moves
+from Game_move_logic import Possible_moves, Make_Board_Move
 from Piece_class_stuff import Sprites, Colour
 
 
@@ -114,3 +114,26 @@ def Mobility(board):
                 else:
                     score -= (len(moves) * 0.1)
     return score
+
+
+# Recursive Algorithm evaluating all possible moves based on score evaluation after making the move
+def Negamax(depth, board, colour):
+    # Case only for evaluating moves
+    if depth == 0:
+        return Shannon_Evaluation(board)
+    # Recursively calculate the scores for made moves
+    max_score = -1000
+    best_move = 0
+    for line in board:
+        for p in line:
+            moves = Possible_moves(p)
+            for move in moves:
+                score = -Negamax(depth - 1, Make_Board_Move(board, move, p), colour)
+                if score > max_score:
+                    max_score = score
+                    best_move = move
+    if colour == Colour.BLACK:
+        max_score = -max_score
+    return max_score, best_move
+
+

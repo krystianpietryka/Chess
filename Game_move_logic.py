@@ -38,6 +38,13 @@ class Move_allowance:
     previous_board = Copy_board(board)
 
 
+def Make_Board_Move(b, move, piece):
+    move_board = Copy_board(b)
+    move_board[move[1]][move[0]] = piece
+    move_board[piece.column][piece.row] = 0
+    return move_board
+
+
 # Checks all possible moves for pieces of one colour, and if none of them break check, then its checkmate
 def Checkmate_Check(original_board, colour):
     current_board = Copy_board(original_board)
