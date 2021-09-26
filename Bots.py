@@ -117,10 +117,10 @@ def Mobility(board):
 
 
 # Recursive Algorithm evaluating all possible moves based on score evaluation after making the move
-def Negamax(depth, board, colour):
+def NegaMax(depth, board, colour):
     # Case only for evaluating moves
     if depth == 0:
-        return Shannon_Evaluation(board)
+        return Shannon_Evaluation(board)    # TU MUSI BYC COLOUR CHANGE!!!
     # Recursively calculate the scores for made moves
     max_score = -1000
     best_move = 0
@@ -128,12 +128,10 @@ def Negamax(depth, board, colour):
         for p in line:
             moves = Possible_moves(p)
             for move in moves:
-                score = -Negamax(depth - 1, Make_Board_Move(board, move, p), colour)
+                score = -NegaMax(depth - 1, Make_Board_Move(board, move, p), colour)
                 if score > max_score:
                     max_score = score
                     best_move = move
     if colour == Colour.BLACK:
         max_score = -max_score
     return max_score, best_move
-
-

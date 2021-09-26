@@ -82,6 +82,10 @@ def Chess(game_type, player_colour):
                     Game_move_logic.board = move[0]
                     current_turn = bot_colour
                 Update_board_state(Game_move_logic.board)
+            elif game_type == 2:
+
+
+                return
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
