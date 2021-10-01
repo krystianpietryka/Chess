@@ -1,5 +1,7 @@
 # Chess
 ![Game_in_progress](https://user-images.githubusercontent.com/66322273/135683770-a08a0e02-5c43-4ec0-9d0c-8e792476290e.png)
+![Terminal_output](https://user-images.githubusercontent.com/66322273/135683893-73224ce2-71d7-4b76-b376-278a9c66d46b.png)
+
 ## Description
 I have always had this idea of making a viable chess simulation in the back of my head, so that is the reason for me building this project.
 It helped me flesh out my OOP and python knowledge.
