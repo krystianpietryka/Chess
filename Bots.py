@@ -124,14 +124,17 @@ def NegaMax(depth, board, colour):
     # Recursively calculate the scores for made moves
     max_score = -1000
     best_move = 0
+    best_piece = 0
     for line in board:
         for p in line:
-            moves = Possible_moves(p)
-            for move in moves:
-                score = -NegaMax(depth - 1, Make_Board_Move(board, move, p), colour)
-                if score > max_score:
-                    max_score = score
-                    best_move = move
+            if p != 0 and p.colour == colour:
+                moves = Possible_moves(p)
+                for move in moves:
+                    score = NegaMax(depth - 1, Make_Board_Move(board, move, p), colour) * (-1)
+                    if score > max_score:
+                        max_score = score
+                        best_move = move
+                        best_piece = p
     if colour == Colour.BLACK:
         max_score = -max_score
-    return max_score, best_move
+    return (best_piece, best_move), max_score

@@ -68,7 +68,7 @@ def Chess(game_type, player_colour):
     while True:
         if Game_move_logic.Move_allowance.checkmate == 1:
             break
-        # BOT STUFF ! Need to restrict movement under check, currently does 2 moves after checked
+        # BOT STUFF
         if game_type != 0 and Game_move_logic.Move_allowance.current_turn != player_colour:
             if game_type == 1:  # Random Bot
                 bot_variables = Bots.Random_Bot(Game_move_logic.board, bot_colour)
@@ -82,8 +82,20 @@ def Chess(game_type, player_colour):
                     Game_move_logic.board = move[0]
                     current_turn = bot_colour
                 Update_board_state(Game_move_logic.board)
-            elif game_type == 2:
 
+            elif game_type == 2:    # NegaMax Bot
+                bot_variables = Bots.NegaMax(3, Game_move_logic.board, bot_colour)
+                move = Game_move_logic.Move(Game_move_logic.board, bot_variables[0], bot_variables[1][0],
+                                            bot_variables[1][1], bot_variables[0].row, bot_variables[0].column)
+                if move[1] == 1:
+                    current_turn = player_colour
+                    pygame.time.wait(random.randint(300, 1200))
+                    pygame.mixer.Sound.play(move_sound)
+                    # print(letters[x] + str(y))
+                else:
+                    Game_move_logic.board = move[0]
+                    current_turn = bot_colour
+                Update_board_state(Game_move_logic.board)
 
                 return
         for event in pygame.event.get():
@@ -159,7 +171,8 @@ def intro():
 def Single_Player():
     layout = [[sg.Text('Single Player', size=(50, 1))],
               [sg.Button('Free Play', size=(35, 2))],
-              [sg.Button('Random Bot (work in progress)', size=(35, 2))],
+              [sg.Button('Random Bot', size=(35, 2))],
+              [sg.Button('NegaMax Bot (work in progress)', size=(35, 2))],
               [sg.Button('Exit', size=(35, 2))]]
     return sg.Window('Single Player', layout, finalize=True)
 
@@ -193,10 +206,14 @@ def Main():
             print("gra")
             window2.close()
             Chess(0, Colour.WHITE)
-        elif event == 'Random Bot (work in progress)':
+        elif event == 'Random Bot':
             print("gra")
             window2.close()
             Chess(1, Colour.WHITE)
+        elif event == 'NegaMax Bot':
+            print("gra")
+            window2.close()
+            Chess(2, Colour.WHITE)
     window.close()
 
 
