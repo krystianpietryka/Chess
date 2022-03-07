@@ -16,5 +16,6 @@ Thanks to https://github.com/Michael-Czekanski for helping me get rid of bugs, a
 ## License
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ## Gameplay
+*Just look at these beautiful pieces!*
 ![Chess Gameplay](https://user-images.githubusercontent.com/66322273/135685394-71301314-7c3d-4d16-9f97-4c5c4dd11896.gif)
 ![Score](https://user-images.githubusercontent.com/66322273/135685669-2c3780de-5787-4d0d-b5c5-9683aa8760ea.gif)
