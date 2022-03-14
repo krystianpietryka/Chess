@@ -1,6 +1,6 @@
 # Chess
 ## Description
-I have always had this idea of making a viable chess simulation in the back of my head, so that is the reason for me building this project.
+I have always had this idea of making a viable chess simulation in the back of my head, and now this idea has come into life :D.
 It helped me flesh out my OOP and python knowledge.
 ## Installation
 Not required, run __main__.py.\
